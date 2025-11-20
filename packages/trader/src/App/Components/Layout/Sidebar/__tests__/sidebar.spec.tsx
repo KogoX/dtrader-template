@@ -27,9 +27,12 @@ jest.mock('@deriv/quill-icons', () => ({
     DerivProductBrandLightDerivTraderLogoIcon: () => 'DerivProductBrandLightDerivTraderLogoIcon',
     LegacyMinimize2pxIcon: () => 'LegacyMinimize2pxIcon',
     StandaloneCircleUserRegularIcon: () => 'StandaloneCircleUserRegularIcon',
+    StandaloneCircleUserFillIcon: () => 'StandaloneCircleUserFillIcon',
     StandaloneClockThreeRegularIcon: () => 'StandaloneClockThreeRegularIcon',
+    StandaloneClockThreeFillIcon: () => 'StandaloneClockThreeFillIcon',
     StandaloneFileRegularIcon: () => 'StandaloneFileRegularIcon',
     StandaloneGlobeRegularIcon: () => 'StandaloneGlobeRegularIcon',
+    StandaloneGlobeFillIcon: () => 'StandaloneGlobeFillIcon',
     StandaloneMoonRegularIcon: () => 'StandaloneMoonRegularIcon',
     StandaloneSunBrightRegularIcon: () => 'StandaloneSunBrightRegularIcon',
 }));
@@ -324,5 +327,56 @@ describe('<Sidebar />', () => {
         const closeButton = screen.getByRole('button', { name: /close flyout/i });
         fireEvent.click(closeButton);
         expect(store.ui.closeSidebarFlyout).toHaveBeenCalled();
+    });
+
+    it('should render fill icon for positions when positions flyout is active', () => {
+        const store = mockStore({
+            ...defaultStoreConfig,
+            ui: {
+                ...defaultStoreConfig.ui,
+                active_sidebar_flyout: 'positions',
+            },
+        });
+        renderSidebar(store);
+        expect(screen.getByText('StandaloneClockThreeFillIcon')).toBeInTheDocument();
+    });
+
+    it('should render regular icon for positions when positions flyout is not active', () => {
+        renderSidebar();
+        expect(screen.getByText('StandaloneClockThreeRegularIcon')).toBeInTheDocument();
+    });
+
+    it('should render fill icon for language when language flyout is active', () => {
+        const store = mockStore({
+            ...defaultStoreConfig,
+            ui: {
+                ...defaultStoreConfig.ui,
+                active_sidebar_flyout: 'language',
+            },
+        });
+        renderSidebar(store);
+        expect(screen.getByText('StandaloneGlobeFillIcon')).toBeInTheDocument();
+    });
+
+    it('should render regular icon for language when language flyout is not active', () => {
+        renderSidebar();
+        expect(screen.getByText('StandaloneGlobeRegularIcon')).toBeInTheDocument();
+    });
+
+    it('should render fill icon for account when account flyout is active', () => {
+        const store = mockStore({
+            ...defaultStoreConfig,
+            ui: {
+                ...defaultStoreConfig.ui,
+                active_sidebar_flyout: 'account',
+            },
+        });
+        renderSidebar(store);
+        expect(screen.getByText('StandaloneCircleUserFillIcon')).toBeInTheDocument();
+    });
+
+    it('should render regular icon for account when account flyout is not active', () => {
+        renderSidebar();
+        expect(screen.getByText('StandaloneCircleUserRegularIcon')).toBeInTheDocument();
     });
 });

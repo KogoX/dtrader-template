@@ -5,9 +5,12 @@ import classNames from 'classnames';
 import { Button, Flyout, Text } from '@deriv/components';
 import {
     DerivProductBrandLightDerivTraderLogoIcon,
+    StandaloneCircleUserFillIcon,
     StandaloneCircleUserRegularIcon,
+    StandaloneClockThreeFillIcon,
     StandaloneClockThreeRegularIcon,
     StandaloneFileRegularIcon,
+    StandaloneGlobeFillIcon,
     StandaloneGlobeRegularIcon,
     StandaloneMoonRegularIcon,
     StandaloneSunBrightRegularIcon,
@@ -78,13 +81,20 @@ const Sidebar = observer(() => {
     };
 
     // Main navigation items
+    const isPositionsActive = active_sidebar_flyout === 'positions';
+    const isReportsActive = isActiveRoute(routes.reports);
+
     const navigationItems: TSidebarItem[] = [
         {
             id: 'positions',
-            icon: <StandaloneClockThreeRegularIcon fill='var(--color-text-primary)' iconSize='sm' />,
+            icon: isPositionsActive ? (
+                <StandaloneClockThreeFillIcon fill='var(--color-nav-item-active)' iconSize='sm' />
+            ) : (
+                <StandaloneClockThreeRegularIcon fill='var(--color-text-primary)' iconSize='sm' />
+            ),
             label: localize('Positions'),
             onClick: handlePositionsToggle,
-            isActive: active_sidebar_flyout === 'positions',
+            isActive: isPositionsActive,
             badge: active_positions_count,
             dataTestId: 'dt_sidebar_positions',
         },
@@ -93,19 +103,26 @@ const Sidebar = observer(() => {
             icon: <StandaloneFileRegularIcon fill='var(--color-text-primary)' iconSize='sm' />,
             label: localize('Reports'),
             onClick: handleReportsClick,
-            isActive: isActiveRoute(routes.reports),
+            isActive: isReportsActive,
             dataTestId: 'dt_sidebar_reports',
         },
     ];
 
     // Utility items (bottom section)
+    const isLanguageActive = active_sidebar_flyout === 'language';
+    const isAccountActive = active_sidebar_flyout === 'account';
+
     const utilityItems = [
         {
             id: 'language',
-            icon: <StandaloneGlobeRegularIcon fill='var(--color-text-primary)' iconSize='sm' />,
+            icon: isLanguageActive ? (
+                <StandaloneGlobeFillIcon fill='var(--color-nav-item-active)' iconSize='sm' />
+            ) : (
+                <StandaloneGlobeRegularIcon fill='var(--color-text-primary)' iconSize='sm' />
+            ),
             label: localize('Language'),
             onClick: handleLanguageToggle,
-            isActive: active_sidebar_flyout === 'language',
+            isActive: isLanguageActive,
             dataTestId: 'dt_sidebar_language',
         },
         {
@@ -122,10 +139,14 @@ const Sidebar = observer(() => {
         },
         {
             id: 'account',
-            icon: <StandaloneCircleUserRegularIcon fill='var(--color-text-primary)' iconSize='sm' />,
+            icon: isAccountActive ? (
+                <StandaloneCircleUserFillIcon fill='var(--color-nav-item-active)' iconSize='sm' />
+            ) : (
+                <StandaloneCircleUserRegularIcon fill='var(--color-text-primary)' iconSize='sm' />
+            ),
             label: localize('Account'),
             onClick: handleAccountToggle,
-            isActive: active_sidebar_flyout === 'account',
+            isActive: isAccountActive,
             dataTestId: 'dt_sidebar_account',
         },
     ];
