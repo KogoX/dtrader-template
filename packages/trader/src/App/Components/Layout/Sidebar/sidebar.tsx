@@ -5,16 +5,19 @@ import classNames from 'classnames';
 import { Button, Flyout, Text } from '@deriv/components';
 import {
     DerivProductBrandLightDerivTraderLogoIcon,
+    StandaloneCircleUserFillIcon,
     StandaloneCircleUserRegularIcon,
+    StandaloneClockThreeFillIcon,
     StandaloneClockThreeRegularIcon,
     StandaloneFileRegularIcon,
+    StandaloneGlobeFillIcon,
     StandaloneGlobeRegularIcon,
     StandaloneMoonRegularIcon,
     StandaloneSunBrightRegularIcon,
 } from '@deriv/quill-icons';
 import { routes } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
-import { localize } from '@deriv-com/translations';
+import { Localize, localize, useTranslations } from '@deriv-com/translations';
 
 import { PositionsDrawerContent, PositionsDrawerFooter } from '../../Elements/PositionsDrawer';
 
@@ -33,11 +36,17 @@ type TSidebarItem = {
 
 const Sidebar = observer(() => {
     const { ui, client, portfolio } = useStore();
+    const { currentLang } = useTranslations();
     const { is_dark_mode_on, active_sidebar_flyout, setSidebarFlyout, closeSidebarFlyout } = ui;
     const { is_logged_in } = client;
-    const { active_positions_count } = portfolio;
+    const { active_positions_count, onMount, onUnmount } = portfolio;
     const location = useLocation();
     const history = useHistory();
+
+    React.useEffect(() => {
+        onMount();
+        return () => onUnmount();
+    }, [onMount, onUnmount]);
 
     const isActiveRoute = (path: string) => {
         if (path === routes.index) {
@@ -72,13 +81,20 @@ const Sidebar = observer(() => {
     };
 
     // Main navigation items
+    const isPositionsActive = active_sidebar_flyout === 'positions';
+    const isReportsActive = isActiveRoute(routes.reports);
+
     const navigationItems: TSidebarItem[] = [
         {
             id: 'positions',
-            icon: <StandaloneClockThreeRegularIcon fill='var(--color-text-primary)' iconSize='sm' />,
+            icon: isPositionsActive ? (
+                <StandaloneClockThreeFillIcon fill='var(--color-nav-item-active)' iconSize='sm' />
+            ) : (
+                <StandaloneClockThreeRegularIcon fill='var(--color-text-primary)' iconSize='sm' />
+            ),
             label: localize('Positions'),
             onClick: handlePositionsToggle,
-            isActive: active_sidebar_flyout === 'positions',
+            isActive: isPositionsActive,
             badge: active_positions_count,
             dataTestId: 'dt_sidebar_positions',
         },
@@ -87,19 +103,26 @@ const Sidebar = observer(() => {
             icon: <StandaloneFileRegularIcon fill='var(--color-text-primary)' iconSize='sm' />,
             label: localize('Reports'),
             onClick: handleReportsClick,
-            isActive: isActiveRoute(routes.reports),
+            isActive: isReportsActive,
             dataTestId: 'dt_sidebar_reports',
         },
     ];
 
     // Utility items (bottom section)
+    const isLanguageActive = active_sidebar_flyout === 'language';
+    const isAccountActive = active_sidebar_flyout === 'account';
+
     const utilityItems = [
         {
             id: 'language',
-            icon: <StandaloneGlobeRegularIcon fill='var(--color-text-primary)' iconSize='sm' />,
+            icon: isLanguageActive ? (
+                <StandaloneGlobeFillIcon fill='var(--color-nav-item-active)' iconSize='sm' />
+            ) : (
+                <StandaloneGlobeRegularIcon fill='var(--color-text-primary)' iconSize='sm' />
+            ),
             label: localize('Language'),
             onClick: handleLanguageToggle,
-            isActive: active_sidebar_flyout === 'language',
+            isActive: isLanguageActive,
             dataTestId: 'dt_sidebar_language',
         },
         {
@@ -116,10 +139,14 @@ const Sidebar = observer(() => {
         },
         {
             id: 'account',
-            icon: <StandaloneCircleUserRegularIcon fill='var(--color-text-primary)' iconSize='sm' />,
+            icon: isAccountActive ? (
+                <StandaloneCircleUserFillIcon fill='var(--color-nav-item-active)' iconSize='sm' />
+            ) : (
+                <StandaloneCircleUserRegularIcon fill='var(--color-text-primary)' iconSize='sm' />
+            ),
             label: localize('Account'),
             onClick: handleAccountToggle,
-            isActive: active_sidebar_flyout === 'account',
+            isActive: isAccountActive,
             dataTestId: 'dt_sidebar_account',
         },
     ];
@@ -128,19 +155,19 @@ const Sidebar = observer(() => {
         switch (active_sidebar_flyout) {
             case 'language':
                 return {
-                    title: localize('Language'),
+                    title: <Localize i18n_default_text='Language' />,
                     content: <LanguageSelector />,
                     footer: null,
                 };
             case 'account':
                 return {
-                    title: localize('Account'),
+                    title: <Localize i18n_default_text='Account' />,
                     content: <AccountSelector />,
                     footer: null,
                 };
             case 'positions':
                 return {
-                    title: localize('Open positions'),
+                    title: <Localize i18n_default_text='Open positions' />,
                     content: <PositionsDrawerContent />,
                     footer: <PositionsDrawerFooter />,
                 };
@@ -149,7 +176,7 @@ const Sidebar = observer(() => {
         }
     };
 
-    const flyoutContent = React.useMemo(() => getFlyoutContent(), [active_sidebar_flyout]);
+    const flyoutContent = React.useMemo(() => getFlyoutContent(), [active_sidebar_flyout, currentLang]);
 
     return (
         <React.Fragment>
@@ -213,7 +240,7 @@ const Sidebar = observer(() => {
             <Flyout
                 is_open={active_sidebar_flyout !== null}
                 onClose={closeFlyout}
-                title={flyoutContent?.title || ''}
+                title={flyoutContent?.title}
                 footer_content={flyoutContent?.footer}
             >
                 {flyoutContent?.content}
