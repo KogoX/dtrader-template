@@ -175,7 +175,7 @@ export default class ClientStore extends BaseStore {
     }
 
     get is_virtual() {
-        return getAccountType();
+        return getAccountType() === 'demo';
     }
 
     get is_eu() {
