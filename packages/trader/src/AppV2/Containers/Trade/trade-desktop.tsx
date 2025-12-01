@@ -1,24 +1,29 @@
 import React from 'react';
 import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
-import { useStore } from '@deriv/stores';
+
+import { useLocalStorageData } from '@deriv/api';
 import { Loading } from '@deriv/components';
 import { getSymbolDisplayName, trackAnalyticsEvent } from '@deriv/shared';
-import { useLocalStorageData } from '@deriv/api';
-import { useTraderStore } from 'Stores/useTraderStores';
-import PurchaseButton from 'AppV2/Components/PurchaseButton';
-import { TradeParametersContainer, TradeParameters } from 'AppV2/Components/TradeParameters';
+import { useStore } from '@deriv/stores';
+
+import AccountHeader from 'AppV2/Components/AccountHeader';
+import AccumulatorStats from 'AppV2/Components/AccumulatorStats';
 import CurrentSpot from 'AppV2/Components/CurrentSpot';
-import { TradeChart } from '../Chart';
-import { isDigitTradeType } from 'Modules/Trading/Helpers/digits';
-import TradeTypes from './trade-types';
-import MarketSelector from 'AppV2/Components/MarketSelector';
+import OnboardingGuide from 'AppV2/Components/OnboardingGuide/GuideForPages';
+import PurchaseButton from 'AppV2/Components/PurchaseButton';
+import { TradeParameters, TradeParametersContainer } from 'AppV2/Components/TradeParameters';
+// Commented out to use chart's native market selector instead
+// import MarketSelector from 'AppV2/Components/MarketSelector';
 import useContractsFor from 'AppV2/Hooks/useContractsFor';
 import useDefaultSymbol from 'AppV2/Hooks/useDefaultSymbol';
-import AccumulatorStats from 'AppV2/Components/AccumulatorStats';
-import OnboardingGuide from 'AppV2/Components/OnboardingGuide/GuideForPages';
 import { getDisplayedContractTypes } from 'AppV2/Utils/trade-types-utils';
-import AccountHeader from 'AppV2/Components/AccountHeader';
+import { isDigitTradeType } from 'Modules/Trading/Helpers/digits';
+import { useTraderStore } from 'Stores/useTraderStores';
+
+import { TradeChart } from '../Chart';
+
+import TradeTypes from './trade-types';
 
 const TradeDesktop = observer(() => {
     const chart_ref = React.useRef<HTMLDivElement>(null);
@@ -118,7 +123,8 @@ const TradeDesktop = observer(() => {
                         />
                         <AccountHeader />
                     </div>
-                    <MarketSelector />
+                    {/* Commented out to use chart's native market selector instead */}
+                    {/* <MarketSelector /> */}
                     <div className='trade-container-v2__grid'>
                         <div className='trade-container-v2__chart-tooltip'>
                             {isDigitTradeType(contract_type) && <CurrentSpot />}

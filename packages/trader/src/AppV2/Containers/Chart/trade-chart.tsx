@@ -13,16 +13,17 @@ import { observer, useStore } from '@deriv/stores';
 import { useDevice } from '@deriv-com/ui';
 
 import { filterByContractType } from 'App/Components/Elements/PositionsDrawer/helpers';
-import ChartIntroGuide from '_common/components/ChartIntroGuide';
 import useActiveSymbols from 'AppV2/Hooks/useActiveSymbols';
 import useDefaultSymbol from 'AppV2/Hooks/useDefaultSymbol';
 import { SmartChart } from 'Modules/SmartChart';
 import AccumulatorsChartElements from 'Modules/SmartChart/Components/Markers/accumulators-chart-elements';
-import TopWidgets from 'Modules/SmartChart/Components/top-widgets';
 import ToolbarWidgets from 'Modules/SmartChart/Components/toolbar-widgets';
+import TopWidgets from 'Modules/SmartChart/Components/top-widgets';
 import { useSmartChartsAdapter } from 'Modules/SmartChart/Hooks/useSmartChartsAdapter';
 import { CHART_CONSTANTS, getMarketsOrder } from 'Modules/SmartChart/Utils/chart-utils';
 import { useTraderStore } from 'Stores/useTraderStores';
+
+import ChartIntroGuide from '_common/components/ChartIntroGuide';
 
 type TickSpotData = NonNullable<TTicksStreamResponse['tick']>;
 
@@ -230,8 +231,8 @@ const TradeChart = observer(() => {
                 allowTickChartTypeOnly={show_digits_stats || is_accumulator}
                 stateChangeListener={chartStateChange}
                 symbol={symbol}
-                // TODO: Add TopWidgets import from SmartChart components for Desktop screen sizes
-                topWidgets={() => <div /> /* to hide the original chart market dropdown */}
+                // Enable chart native TopWidgets for desktop, keep hidden for mobile
+                topWidgets={isMobile ? () => <div /> : TopWidgets}
                 isConnectionOpened={is_socket_opened}
                 clearChart={false}
                 toolbarWidget={() => {
