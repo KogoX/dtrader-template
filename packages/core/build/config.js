@@ -69,6 +69,9 @@ const copyConfig = base => {
         {
             from: path.resolve(__dirname, '../src/public/videos/'),
             to: 'public/videos',
+            globOptions: {
+                ignore: ['**/*.mp4', '**/*.webm'],
+            },
         },
         {
             from: path.resolve(__dirname, '../src/public/images/common/callback_loader.gif'),
