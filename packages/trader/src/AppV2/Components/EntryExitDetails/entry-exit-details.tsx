@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import moment from 'moment';
 
-import { addComma, formatDate, formatTime, getEndTime, TContractInfo } from '@deriv/shared';
+import { addComma, formatDate, formatTime, getEndTime, isDigitContract, TContractInfo } from '@deriv/shared';
 import { Localize } from '@deriv-com/translations';
 
 import CardWrapper from '../CardWrapper';
@@ -45,7 +45,7 @@ const getDateTimeFromEpoch = (epoch: number | string | undefined | null) => {
 };
 
 const EntryExitDetails = ({ contract_info }: { contract_info: TContractInfo }) => {
-    const { entry_spot_time, entry_spot, exit_spot_time, exit_spot, date_start } = contract_info;
+    const { entry_spot_time, entry_spot, exit_spot_time, exit_spot, date_start, contract_type } = contract_info;
 
     const actual_entry_spot = entry_spot;
     const actual_exit_spot = exit_spot;
@@ -80,7 +80,7 @@ const EntryExitDetails = ({ contract_info }: { contract_info: TContractInfo }) =
                         time={dateTimes.start.time}
                     />
                 )}
-                {dateTimes.entry && entryValue && (
+                {dateTimes.entry && entryValue && !isDigitContract(contract_type) && (
                     <EntryExitDetailRow
                         label={<Localize i18n_default_text='Entry spot' />}
                         value={entryValue}
