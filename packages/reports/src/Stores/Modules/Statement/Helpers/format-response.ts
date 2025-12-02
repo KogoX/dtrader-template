@@ -1,5 +1,5 @@
 import { TStatementResponse } from '@deriv/api';
-import { formatMoney, getMarketInformation, getSymbolDisplayName, toMoment, toTitleCase } from '@deriv/shared';
+import { formatMoney, getMarketInformation, getSymbolDisplayName, toTitleCase } from '@deriv/shared';
 import { localize } from '@deriv-com/translations';
 
 export const formatStatementTransaction = (
@@ -7,8 +7,6 @@ export const formatStatementTransaction = (
     currency: string
 ) => {
     const { action_type, contract_id, longcode, purchase_time } = transaction;
-    const format_string = 'DD MMM YYYY HH:mm:ss';
-    const transaction_time = toMoment(transaction.transaction_time).format(format_string);
     const payout = transaction.payout ?? NaN;
     const amount = transaction.amount ?? NaN;
     const balance = transaction.balance_after ?? NaN;
@@ -18,7 +16,6 @@ export const formatStatementTransaction = (
 
     return {
         action: localize(toTitleCase(action_type ?? '')), // 'Buy', 'Sell', 'Deposit', 'Withdrawal'
-        date: transaction_time,
         display_name,
         refid: transaction.transaction_id,
         payout: isNaN(payout) ? '-' : formatMoney(currency, payout, should_exclude_currency),

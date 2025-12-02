@@ -10,6 +10,7 @@ import {
     formatDate,
     getContractPath,
     getUnsupportedContracts,
+    initMoment,
 } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { Analytics } from '@deriv-com/analytics';
@@ -159,6 +160,10 @@ const Statement = observer(({ component_icon }: TStatement) => {
     const prev_date_from = usePrevious(date_from);
     const prev_date_to = usePrevious(date_to);
     const { isMobile } = useDevice();
+
+    React.useEffect(() => {
+        initMoment(current_language);
+    }, [current_language]);
 
     React.useEffect(() => {
         onMount();

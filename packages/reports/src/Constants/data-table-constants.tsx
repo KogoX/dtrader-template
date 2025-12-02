@@ -93,9 +93,10 @@ export const getStatementTableColumnsTemplate = (currency: string, isDesktop: bo
     },
     {
         title: <Localize i18n_default_text='Transaction time' />,
-        col_index: 'date',
+        col_index: 'transaction_time',
         renderCellContent: ({ cell_value }: TCellContentProps) => {
-            return <span>{cell_value} GMT</span>;
+            if (!cell_value) return '-';
+            return <span>{formatDate(cell_value, 'DD MMM YYYY HH:mm:ss')} GMT</span>;
         },
     },
     {
