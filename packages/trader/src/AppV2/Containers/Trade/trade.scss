@@ -30,10 +30,26 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: var(--core-spacing-400);
             height: 6.5rem;
             background-color: var(--semantic-color-slate-solid-surface-frame-low);
             border-bottom: 1px solid var(--semantic-color-monochrome-border-normal-mid);
+            position: relative;
+
+            &:after {
+                content: '';
+                position: absolute;
+                top: 0;
+                right: 32rem;
+                width: 5.6rem;
+                height: 100%;
+                background: linear-gradient(to right, transparent, var(--semantic-color-slate-solid-surface-frame-low));
+                pointer-events: none;
+                z-index: 1;
+
+                @include mobile-screen {
+                    display: none;
+                }
+            }
         }
         &__grid {
             display: grid;
@@ -47,6 +63,7 @@
             background-color: var(--semantic-color-slate-solid-surface-frame-low);
             display: flex;
             align-items: center;
+            padding: 0 var(--core-spacing-800);
             gap: var(--core-spacing-400);
             overflow-x: auto;
             min-height: var(--core-spacing-1600);
