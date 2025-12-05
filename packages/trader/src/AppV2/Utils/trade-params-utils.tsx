@@ -74,6 +74,7 @@ export const getTradeParams = (symbol?: string, has_cancellation?: boolean) => (
         accu_info_display: true,
     },
     [TRADE_TYPES.MULTIPLIER]: {
+        trade_type_tabs: true,
         multiplier: true,
         stake: true,
         risk_management: true,
@@ -245,6 +246,18 @@ export const getTradeTypeTabsList = (contract_type = '') => {
             value: TRADE_TYPES.OVER_UNDER,
             contract_type: CONTRACT_TYPES.OVER_UNDER.UNDER,
             is_displayed: contract_type === TRADE_TYPES.OVER_UNDER,
+        },
+        {
+            label: 'Up',
+            value: TRADE_TYPES.MULTIPLIER,
+            contract_type: CONTRACT_TYPES.MULTIPLIER.UP,
+            is_displayed: contract_type === TRADE_TYPES.MULTIPLIER,
+        },
+        {
+            label: 'Down',
+            value: TRADE_TYPES.MULTIPLIER,
+            contract_type: CONTRACT_TYPES.MULTIPLIER.DOWN,
+            is_displayed: contract_type === TRADE_TYPES.MULTIPLIER,
         },
     ];
     return tab_list.filter(({ is_displayed }) => is_displayed);
