@@ -11,6 +11,14 @@ jest.mock('react-transition-group', () => ({
     CSSTransition: jest.fn(({ children }) => <div>{children}</div>),
 }));
 jest.mock('../../Guide', () => jest.fn(() => 'Guide'));
+jest.mock('@deriv-com/ui', () => ({
+    ...jest.requireActual('@deriv-com/ui'),
+    useDevice: jest.fn(() => ({ isMobile: false, isDesktop: true })),
+}));
+jest.mock('@deriv/shared', () => ({
+    ...jest.requireActual('@deriv/shared'),
+    isMobile: jest.fn(() => true),
+}));
 
 describe('TradeParametersContainer', () => {
     it('should render a proper content with children if is_minimized is false', () => {
