@@ -105,7 +105,7 @@ describe('Duration', () => {
         default_trade_store.modules.trade.duration = 125;
         mockDuration();
         expect(screen.getByLabelText('Duration')).toBeInTheDocument();
-        expect(screen.getByDisplayValue('2 hr 5 min')).toBeInTheDocument();
+        expect(screen.getByDisplayValue('2 hours 5 minutes')).toBeInTheDocument();
     });
 
     it('should open the popover when the text field is clicked (desktop)', async () => {
@@ -165,7 +165,7 @@ describe('Duration', () => {
         const textField = screen.getByLabelText('Duration');
         await userEvent.click(textField);
 
-        expect(screen.getByDisplayValue('2 hr 5 min')).toBeInTheDocument();
+        expect(screen.getByDisplayValue('2 hours 5 minutes')).toBeInTheDocument();
     });
 
     it('should update saved_expiry_date when expiry_epoch changes to a different date', () => {
