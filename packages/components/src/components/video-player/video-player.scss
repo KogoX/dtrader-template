@@ -160,9 +160,15 @@
 
         &__time-wrapper {
             margin: 0 1.6rem;
+            * {
+                color: var(--color-text-white);
+            }
 
             &--v2 {
                 margin: 0;
+                * {
+                    color: var(--color-text-white);
+                }
             }
         }
 
@@ -179,6 +185,7 @@
 
             svg {
                 margin: 0 !important; // Override default margin from contract-type-info.scss
+                fill: var(--color-text-white);
             }
         }
     }
@@ -327,14 +334,14 @@
 
                     .dc-dropdown__display-text {
                         padding: 0 0 0 3.5rem;
-                        color: var(--color-surface-primary);
+                        color: var(--color-text-white);
                         font-size: var(--text-size-xxs);
                     }
                 }
 
                 .dc-dropdown__display-text {
                     padding: 0 0 0 2.5rem;
-                    color: var(--color-surface-primary);
+                    color: var(--color-text-white);
                     font-size: 1rem;
                 }
             }
