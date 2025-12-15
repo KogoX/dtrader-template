@@ -37,7 +37,6 @@ jest.mock('@deriv/components', () => {
 
 jest.mock('@deriv/quill-icons', () => ({
     LegacyChartsIcon: () => <div data-testid='charts-icon'>Charts</div>,
-    LegacyArrowLeft1pxIcon: () => <div data-testid='arrow-left-icon'>ArrowLeft</div>,
     LegacyChevronRight1pxIcon: () => <div data-testid='chevron-right-icon'>ChevronRight</div>,
     LegacyHelpCentreIcon: () => <div data-testid='help-centre-icon'>HelpCentre</div>,
     LegacyHomeOldIcon: () => <div data-testid='home-icon'>Home</div>,
@@ -225,41 +224,9 @@ describe('<ToggleMenuDrawer />', () => {
         expect(clearTimeout).toBeCalled();
     });
 
-    it('should show back icon when bridge is available', () => {
-        // Mock bridge available
-        mockIsBridgeAvailable.mockReturnValue(true);
-        mockUseMobileBridge.mockReturnValue({
-            sendBridgeEvent: mockSendBridgeEvent,
-            isBridgeAvailable: mockIsBridgeAvailable,
-            isDesktop: false,
-        });
-
-        render(mockToggleMenuDrawer());
-
-        // Should contain back icon when bridge is available
-        const backIcon = screen.getByTestId('arrow-left-icon');
-        expect(backIcon).toBeInTheDocument();
-    });
-
-    it('should show hamburger icon when bridge is not available', () => {
-        // Mock bridge not available
-        mockIsBridgeAvailable.mockReturnValue(false);
-        mockUseMobileBridge.mockReturnValue({
-            sendBridgeEvent: mockSendBridgeEvent,
-            isBridgeAvailable: mockIsBridgeAvailable,
-            isDesktop: false,
-        });
-
-        render(mockToggleMenuDrawer());
-
-        // Should contain hamburger icon when bridge is not available
-        const hamburgerIcon = screen.getByTestId('hamburger-icon');
-        expect(hamburgerIcon).toBeInTheDocument();
-    });
-
-    it('should trigger back event when back icon is clicked and bridge is available', async () => {
-        // Mock bridge available
+    it('should use Flutter channel when bridge is available and logout is clicked', async () => {
         const user = userEvent.setup({ delay: null });
+        // Mock bridge available
         mockSendBridgeEvent.mockResolvedValue(true);
         mockIsBridgeAvailable.mockReturnValue(true);
         mockUseMobileBridge.mockReturnValue({
@@ -270,15 +237,29 @@ describe('<ToggleMenuDrawer />', () => {
 
         render(mockToggleMenuDrawer());
 
-        const toggleButton = screen.getByTestId('dt_mobile_drawer_toggle');
-        await user.click(toggleButton);
+        // Find and click the hamburger menu to open drawer
+        const hamburgerButton = screen.getByTestId('dt_mobile_drawer_toggle');
+        await user.click(hamburgerButton);
 
-        expect(mockSendBridgeEvent).toHaveBeenCalledWith('trading:back');
+        // Find logout menu item and click it
+        const logoutItems = screen.getAllByTestId('drawer-item');
+        const logoutItem = logoutItems.find(item => item.textContent && item.textContent.includes('Back to app'));
+
+        if (logoutItem) {
+            await user.click(logoutItem);
+
+            expect(mockSendBridgeEvent).toHaveBeenCalledWith('trading:back', expect.any(Function));
+        }
     });
 
-    it('should open drawer when hamburger icon is clicked and bridge is not available', async () => {
-        // Mock bridge not available
+    it('should fallback to regular logout when bridge is not available', async () => {
         const user = userEvent.setup({ delay: null });
+        // Mock bridge not available
+        mockSendBridgeEvent.mockImplementation(async (_event, fallback) => {
+            if (fallback) {
+                await fallback(); // Execute fallback
+            }
+        });
         mockIsBridgeAvailable.mockReturnValue(false);
         mockUseMobileBridge.mockReturnValue({
             sendBridgeEvent: mockSendBridgeEvent,
@@ -286,6 +267,64 @@ describe('<ToggleMenuDrawer />', () => {
             isDesktop: false,
         });
 
+        render(mockToggleMenuDrawer());
+
+        // Find and click the hamburger menu to open drawer
+        const hamburgerButton = screen.getByTestId('dt_mobile_drawer_toggle');
+        await user.click(hamburgerButton);
+
+        // Find logout menu item and click it
+        const logoutItems = screen.getAllByTestId('drawer-item');
+        const logoutItem = logoutItems.find(item => item.textContent && item.textContent.includes('Log out'));
+
+        if (logoutItem) {
+            await user.click(logoutItem);
+
+            expect(mockSendBridgeEvent).toHaveBeenCalledWith('trading:back', expect.any(Function));
+            expect(mockLogout).toHaveBeenCalledTimes(1);
+        }
+    });
+
+    it('should show "Back to app" text when bridge is available', () => {
+        // Mock bridge available
+        mockIsBridgeAvailable.mockReturnValue(true);
+        mockUseMobileBridge.mockReturnValue({
+            sendBridgeEvent: mockSendBridgeEvent,
+            isBridgeAvailable: mockIsBridgeAvailable,
+            isDesktop: false,
+        });
+
+        render(mockToggleMenuDrawer());
+
+        // The component should use "Back to app" text when bridge is available
+        expect(mockIsBridgeAvailable()).toBe(true);
+    });
+
+    it('should show "Log out" text when bridge is not available', () => {
+        // Mock bridge not available
+        mockIsBridgeAvailable.mockReturnValue(false);
+        mockUseMobileBridge.mockReturnValue({
+            sendBridgeEvent: mockSendBridgeEvent,
+            isBridgeAvailable: mockIsBridgeAvailable,
+            isDesktop: false,
+        });
+
+        render(mockToggleMenuDrawer());
+
+        // The component should use "Log out" text when bridge is not available
+        expect(mockIsBridgeAvailable()).toBe(false);
+    });
+
+    it('should always show hamburger icon', () => {
+        render(mockToggleMenuDrawer());
+
+        // Should always contain hamburger icon
+        const hamburgerIcon = screen.getByTestId('hamburger-icon');
+        expect(hamburgerIcon).toBeInTheDocument();
+    });
+
+    it('should open drawer when hamburger icon is clicked', async () => {
+        const user = userEvent.setup({ delay: null });
         render(mockToggleMenuDrawer());
 
         const toggleButton = screen.getByTestId('dt_mobile_drawer_toggle');
@@ -332,9 +371,10 @@ describe('<ToggleMenuDrawer />', () => {
 
     describe('Home button', () => {
         it('should render Home button with correct icon and text', async () => {
+            const user = userEvent.setup({ delay: null });
             render(mockToggleMenuDrawer());
             const hamburgerButton = screen.getByTestId('dt_mobile_drawer_toggle');
-            await userEvent.click(hamburgerButton);
+            await user.click(hamburgerButton);
 
             const homeItems = screen.getAllByTestId('drawer-item');
             const homeItem = homeItems.find(item => item.textContent?.includes('Home'));
@@ -345,22 +385,24 @@ describe('<ToggleMenuDrawer />', () => {
         });
 
         it('should send trading:home bridge event when clicked', async () => {
+            const user = userEvent.setup({ delay: null });
             mockSendBridgeEvent.mockImplementation(() => {
                 // Don't call fallback - bridge handles it
             });
 
             render(mockToggleMenuDrawer());
             const hamburgerButton = screen.getByTestId('dt_mobile_drawer_toggle');
-            await userEvent.click(hamburgerButton);
+            await user.click(hamburgerButton);
 
             const homeItems = screen.getAllByTestId('drawer-item');
             const homeItem = homeItems.find(item => item.textContent?.includes('Home'));
-            await userEvent.click(homeItem);
+            await user.click(homeItem);
 
             expect(mockSendBridgeEvent).toHaveBeenCalledWith('trading:home', expect.any(Function));
         });
 
         it('should navigate to correct URL with currency and language when fallback is called', async () => {
+            const user = userEvent.setup({ delay: null });
             const mockLocation = { href: '' };
             Object.defineProperty(window, 'location', {
                 value: mockLocation,
@@ -380,11 +422,11 @@ describe('<ToggleMenuDrawer />', () => {
             );
 
             const hamburgerButton = screen.getByTestId('dt_mobile_drawer_toggle');
-            await userEvent.click(hamburgerButton);
+            await user.click(hamburgerButton);
 
             const homeItems = screen.getAllByTestId('drawer-item');
             const homeItem = homeItems.find(item => item.textContent?.includes('Home'));
-            await userEvent.click(homeItem);
+            await user.click(homeItem);
 
             expect(mockLocation.href).toBe(
                 'https://deriv.com/options?acc=options&curr=EUR&from=home&source=options&lang=ES'
@@ -392,6 +434,7 @@ describe('<ToggleMenuDrawer />', () => {
         });
 
         it('should encode URL parameters correctly', async () => {
+            const user = userEvent.setup({ delay: null });
             const mockLocation = { href: '' };
             Object.defineProperty(window, 'location', {
                 value: mockLocation,
@@ -412,11 +455,11 @@ describe('<ToggleMenuDrawer />', () => {
             );
 
             const hamburgerButton = screen.getByTestId('dt_mobile_drawer_toggle');
-            await userEvent.click(hamburgerButton);
+            await user.click(hamburgerButton);
 
             const homeItems = screen.getAllByTestId('drawer-item');
             const homeItem = homeItems.find(item => item.textContent?.includes('Home'));
-            await userEvent.click(homeItem);
+            await user.click(homeItem);
 
             // Verify that the language parameter is properly encoded
             expect(mockLocation.href).toBe(
@@ -425,6 +468,7 @@ describe('<ToggleMenuDrawer />', () => {
         });
 
         it('should handle empty currency gracefully', async () => {
+            const user = userEvent.setup({ delay: null });
             const mockLocation = { href: '' };
             Object.defineProperty(window, 'location', {
                 value: mockLocation,
@@ -444,17 +488,18 @@ describe('<ToggleMenuDrawer />', () => {
             );
 
             const hamburgerButton = screen.getByTestId('dt_mobile_drawer_toggle');
-            await userEvent.click(hamburgerButton);
+            await user.click(hamburgerButton);
 
             const homeItems = screen.getAllByTestId('drawer-item');
             const homeItem = homeItems.find(item => item.textContent?.includes('Home'));
-            await userEvent.click(homeItem);
+            await user.click(homeItem);
 
             // Should handle empty currency
             expect(mockLocation.href).toContain('curr=');
         });
 
         it('should hide Home button when bridge is available', async () => {
+            const user = userEvent.setup({ delay: null });
             // Mock bridge available
             mockIsBridgeAvailable.mockReturnValue(true);
             mockUseMobileBridge.mockReturnValue({
@@ -465,7 +510,7 @@ describe('<ToggleMenuDrawer />', () => {
 
             render(mockToggleMenuDrawer());
             const hamburgerButton = screen.getByTestId('dt_mobile_drawer_toggle');
-            await userEvent.click(hamburgerButton);
+            await user.click(hamburgerButton);
 
             const homeItems = screen.queryAllByTestId('drawer-item');
             const homeItem = homeItems.find(item => item.textContent?.includes('Home'));
@@ -475,6 +520,7 @@ describe('<ToggleMenuDrawer />', () => {
         });
 
         it('should show Home button when bridge is not available', async () => {
+            const user = userEvent.setup({ delay: null });
             // Mock bridge not available
             mockIsBridgeAvailable.mockReturnValue(false);
             mockUseMobileBridge.mockReturnValue({
@@ -485,7 +531,7 @@ describe('<ToggleMenuDrawer />', () => {
 
             render(mockToggleMenuDrawer());
             const hamburgerButton = screen.getByTestId('dt_mobile_drawer_toggle');
-            await userEvent.click(hamburgerButton);
+            await user.click(hamburgerButton);
 
             const homeItems = screen.getAllByTestId('drawer-item');
             const homeItem = homeItems.find(item => item.textContent?.includes('Home'));

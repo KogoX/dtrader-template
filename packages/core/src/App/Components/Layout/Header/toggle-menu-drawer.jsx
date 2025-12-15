@@ -5,7 +5,6 @@ import classNames from 'classnames';
 import { useRemoteConfig } from '@deriv/api';
 import { Div100vhContainer, MobileDrawer, ToggleSwitch } from '@deriv/components';
 import {
-    LegacyArrowLeft1pxIcon,
     LegacyChartsIcon,
     LegacyChevronRight1pxIcon,
     LegacyHelpCentreIcon,
@@ -84,10 +83,6 @@ const ToggleMenuDrawer = observer(() => {
         }
         setIsSubmenuExpanded(false);
     }, [setIsSubmenuExpanded, is_open, is_mobile_language_menu_open, setMobileLanguageMenuOpen]);
-
-    const handleBackClick = React.useCallback(async () => {
-        await sendBridgeEvent('trading:back');
-    }, [sendBridgeEvent]);
 
     const handleHomeClick = React.useCallback(() => {
         toggleDrawer();
@@ -192,29 +187,14 @@ const ToggleMenuDrawer = observer(() => {
             <a
                 id='dt_mobile_drawer_toggle'
                 data-testid='dt_mobile_drawer_toggle'
-                onClick={
-                    isBridgeAvailable()
-                        ? async e => {
-                              e.preventDefault();
-                              await handleBackClick();
-                          }
-                        : toggleDrawer
-                }
+                onClick={toggleDrawer}
                 className='header__mobile-drawer-toggle'
             >
-                {isBridgeAvailable() ? (
-                    <LegacyArrowLeft1pxIcon
-                        iconSize='xs'
-                        className='header__mobile-drawer-icon'
-                        fill='var(--color-text-primary)'
-                    />
-                ) : (
-                    <LegacyMenuHamburger1pxIcon
-                        iconSize='xs'
-                        className='header__mobile-drawer-icon'
-                        fill='var(--color-text-primary)'
-                    />
-                )}
+                <LegacyMenuHamburger1pxIcon
+                    iconSize='xs'
+                    className='header__mobile-drawer-icon'
+                    fill='var(--color-text-primary)'
+                />
             </a>
             <MobileDrawer
                 alignment='left'
