@@ -333,10 +333,6 @@ export default class ClientStore extends BaseStore {
         const action_param = search_params?.get('action');
         const loginid_param = search_params?.get('loginid');
 
-        if (!window.location.pathname.endsWith(routes.index) && /chart_type|interval|symbol|trade_type/.test(search)) {
-            window.history.replaceState({}, document.title, routes.index + search);
-        }
-
         const account_id = getAccountId();
         let authorize_response;
 
