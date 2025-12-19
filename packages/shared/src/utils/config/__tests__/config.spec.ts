@@ -66,34 +66,28 @@ describe('getAccountType', () => {
         mockLocation(originalLocation, {
             search: '?account_type=demo',
             href: 'https://staging-dtrader.deriv.com?account_type=demo',
+            pathname: '/',
         });
 
         const result = getAccountType();
 
         expect(result).toBe('demo');
         expect(window.localStorage.getItem('account_type')).toBe('demo');
-        expect(window.history.replaceState).toHaveBeenCalledWith(
-            {},
-            document.title,
-            'https://staging-dtrader.deriv.com/'
-        );
+        expect(window.history.replaceState).toHaveBeenCalledWith({}, document.title, '/');
     });
 
     it('should return "real" from URL parameter and store it in localStorage', () => {
         mockLocation(originalLocation, {
             search: '?account_type=real',
             href: 'https://staging-dtrader.deriv.com?account_type=real',
+            pathname: '/',
         });
 
         const result = getAccountType();
 
         expect(result).toBe('real');
         expect(window.localStorage.getItem('account_type')).toBe('real');
-        expect(window.history.replaceState).toHaveBeenCalledWith(
-            {},
-            document.title,
-            'https://staging-dtrader.deriv.com/'
-        );
+        expect(window.history.replaceState).toHaveBeenCalledWith({}, document.title, '/');
     });
 
     it('should return "real" from URL parameter and override demo in localStorage', () => {
@@ -101,17 +95,14 @@ describe('getAccountType', () => {
         mockLocation(originalLocation, {
             search: '?account_type=real',
             href: 'https://staging-dtrader.deriv.com?account_type=real',
+            pathname: '/',
         });
 
         const result = getAccountType();
 
         expect(result).toBe('real');
         expect(window.localStorage.getItem('account_type')).toBe('real');
-        expect(window.history.replaceState).toHaveBeenCalledWith(
-            {},
-            document.title,
-            'https://staging-dtrader.deriv.com/'
-        );
+        expect(window.history.replaceState).toHaveBeenCalledWith({}, document.title, '/');
     });
 
     it('should return value from localStorage when URL parameter is missing', () => {
@@ -141,11 +132,14 @@ describe('getAccountType', () => {
         mockLocation(originalLocation, {
             search: '?account_type=invalid',
             href: 'https://staging-dtrader.deriv.com?account_type=invalid',
+            pathname: '/',
         });
 
         const result = getAccountType();
 
         expect(result).toBe('public');
+        // replaceState should NOT be called for invalid account_type values
+        expect(window.history.replaceState).not.toHaveBeenCalled();
     });
 });
 

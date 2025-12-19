@@ -42,7 +42,7 @@ export const getAccountType = (): 'real' | 'demo' | 'public' => {
         const url = new URL(window.location.href);
         if (url.searchParams.has('account_type')) {
             url.searchParams.delete('account_type');
-            window.history.replaceState({}, document.title, url.toString());
+            window.history.replaceState({}, document.title, url.pathname + url.search);
         }
 
         return accountTypeFromUrl;
@@ -72,7 +72,7 @@ export const getAccountId = (): string | null => {
         // Remove from URL after storing
         const url = new URL(window.location.href);
         url.searchParams.delete('account_id');
-        window.history.replaceState({}, document.title, url.toString());
+        window.history.replaceState({}, document.title, url.pathname + url.search);
         return accountIdFromUrl;
     }
 
