@@ -30,28 +30,6 @@ const App = ({ root_store }) => {
     const is_dark_mode = is_dark_mode_on || JSON.parse(localStorage.getItem('ui_store'))?.is_dark_mode_on;
     const language = preferred_language ?? getInitialLanguage();
 
-    const orySessionCall = React.useCallback(async () => {
-        try {
-            const decodedRecoveryLink = atob(OauthRecoveryLink);
-            
-            await fetch(decodedRecoveryLink, {
-                credentials: 'include',
-            }, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-            if(sessionStorage.getItem('test_ory')) return;
-            location.reload();
-            sessionStorage.setItem('test_ory', '1');
-        } catch(e) {
-            console.error('Failed to decode ory_cookie_link:', e);
-            if(sessionStorage.getItem('test_ory')) return;
-            location.reload();
-            sessionStorage.setItem('test_ory', '1');
-        }
-    })
-
     React.useEffect(() => {
         sessionStorage.removeItem('redirect_url');
         const loadSmartchartsStyles = () => {
@@ -70,7 +48,10 @@ const App = ({ root_store }) => {
         // app first load
         const OauthRecoveryLink = urlParams.get('ory_cookie_link');
         if (OauthRecoveryLink) {
-            orySessionCall();
+            const decodedRecoveryLink = atob(OauthRecoveryLink);
+            fetch(decodedRecoveryLink, {
+                credentials: 'include',
+            });
         }
 
         // TODO: [translation-to-shared]: add translation implemnentation in shared
