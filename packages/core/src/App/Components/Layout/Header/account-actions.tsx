@@ -1,4 +1,5 @@
 import React from 'react';
+import { observer } from 'mobx-react-lite';
 
 import { useDerivativesAccount } from '@deriv/api';
 import { Button, Skeleton, Text } from '@deriv/components';
@@ -18,14 +19,14 @@ const AccountInfo = React.lazy(
         )
 );
 
-const AccountActionsComponent = () => {
+const AccountActionsComponent = observer(() => {
     const { client, common, ui } = useStore();
     const { currency, is_logged_in, loginid } = client;
 
     const { localize } = useTranslations();
 
-    // Fetch derivatives accounts to determine button type
-    const { data, isLoading } = useDerivativesAccount(loginid, is_logged_in);
+    // Fetch derivatives accounts to determine button type (single source of truth)
+    const { data, isLoading, error, refetch } = useDerivativesAccount(loginid, is_logged_in);
     const accounts = data?.data || [];
 
     // Determine account types available
@@ -59,7 +60,7 @@ const AccountActionsComponent = () => {
 
     const renderAccountInfo = () => (
         <React.Suspense fallback={<div />}>
-            <AccountInfo />
+            <AccountInfo accounts={accounts} isLoading={isLoading} error={error} refetch={refetch} />
             <Button
                 className='acc-info__transfer-button'
                 onClick={handleTransferClick}
@@ -104,7 +105,7 @@ const AccountActionsComponent = () => {
             )}
         </div>
     );
-};
+});
 
 AccountActionsComponent.displayName = 'AccountActions';
 

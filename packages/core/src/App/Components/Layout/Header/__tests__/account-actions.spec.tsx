@@ -23,6 +23,7 @@ const mockUseDerivativesAccount = jest.fn(() => ({
     },
     isLoading: false,
     error: null,
+    refetch: jest.fn(),
 }));
 
 jest.mock('@deriv/api', () => ({
@@ -78,6 +79,7 @@ describe('AccountActions component', () => {
             },
             isLoading: false,
             error: null,
+            refetch: jest.fn(),
         });
     });
 
@@ -118,6 +120,7 @@ describe('AccountActions component', () => {
             },
             isLoading: false,
             error: null,
+            refetch: jest.fn(),
         });
 
         renderWithStore({
@@ -177,6 +180,7 @@ describe('AccountActions component', () => {
             },
             isLoading: false,
             error: null,
+            refetch: jest.fn(),
         });
 
         const toggleTryRealModal = jest.fn();
@@ -220,6 +224,7 @@ describe('AccountActions component', () => {
                 },
                 isLoading: false,
                 error: null,
+                refetch: jest.fn(),
             });
 
             const toggleTryRealModal = jest.fn();

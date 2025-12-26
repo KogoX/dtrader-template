@@ -415,7 +415,7 @@ $FLOATING_HEADER_HEIGHT: 41px;
 .chart-container {
     width: 100%;
     position: relative;
-    padding: 1.6rem 1.6rem 1.6rem 0;
+    padding: 1.6rem 0;
 
     &__wrapper {
         position: relative;
@@ -637,7 +637,6 @@ $FLOATING_HEADER_HEIGHT: 41px;
 .trade-params-v1 {
     position: relative;
     padding: 1.6rem 1.6rem 1.6rem 0;
-    width: calc(#{$SIDEBAR_WIDTH} + 1.6rem);
 
     &__items {
         display: flex;
@@ -646,7 +645,7 @@ $FLOATING_HEADER_HEIGHT: 41px;
         transform: none;
         position: relative;
         min-height: 460px;
-        width: $SIDEBAR_WIDTH;
+        width: calc($SIDEBAR_WIDTH + 1.6rem);
         height: 100%;
 
         &:after {
@@ -665,6 +664,7 @@ $FLOATING_HEADER_HEIGHT: 41px;
 
         &-content {
             flex: 1;
+            padding-left: 1.6rem;
         }
 
         &--market-closed {

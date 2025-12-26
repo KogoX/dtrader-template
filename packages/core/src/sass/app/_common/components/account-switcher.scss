@@ -143,6 +143,8 @@
         cursor: default;
     }
     &__button {
+        border-radius: 24px;
+
         @include mobile-screen {
             height: 2.8rem !important;
         }

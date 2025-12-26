@@ -1,7 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
 
-import { useDerivativesAccount } from '@deriv/api';
 import { Text } from '@deriv/components';
 import { LegacyChevronDown1pxIcon } from '@deriv/quill-icons';
 import { addComma, formatMoney, getAccountType, getCurrencyDisplayCode } from '@deriv/shared';
@@ -13,18 +12,13 @@ import AccountInfoWrapper from './account-info-wrapper';
 import AccountSwitcher from './account-switcher';
 import AccountSwitcherIntroTooltip from './AccountSwitcherIntroTooltip';
 
-const AccountInfo = observer(() => {
+const AccountInfo = observer(({ accounts = [], isLoading = false, error = null, refetch }) => {
     const { localize } = useTranslations();
     const { isMobile } = useDevice();
 
     // Get client data from store
     const { client, ui } = useStore();
     const { loginid, is_logged_in, balance, currency } = client;
-
-    // Fetch derivatives accounts using React Query
-    // loginid is included in query key for cache invalidation on account switch
-    const { data, isLoading, error, refetch } = useDerivativesAccount(loginid, is_logged_in);
-    const accounts = data?.data || [];
 
     // Dropdown open/close state
     const [is_dropdown_open, setIsDropdownOpen] = React.useState(false);

@@ -14,22 +14,6 @@ jest.mock('@deriv/shared', () => ({
     formatMoney: jest.fn((_currency, balance) => String(balance)),
 }));
 
-const mockUseDerivativesAccount = jest.fn(() => ({
-    data: {
-        data: [
-            { account_id: 'CR123', account_type: 'real', balance: '10000.00', currency: 'USD' },
-            { account_id: 'VRTC456', account_type: 'demo', balance: '5000.00', currency: 'USD' },
-        ],
-    },
-    isLoading: false,
-    error: null,
-}));
-
-jest.mock('@deriv/api', () => ({
-    ...jest.requireActual('@deriv/api'),
-    useDerivativesAccount: () => mockUseDerivativesAccount(),
-}));
-
 jest.mock('@deriv-com/ui', () => ({
     useDevice: jest.fn(() => ({ isMobile: false })),
 }));
@@ -52,7 +36,12 @@ jest.mock('../account-switcher', () => {
 const mockGetAccountType = getAccountType as jest.MockedFunction<typeof getAccountType>;
 const mockFormatMoney = formatMoney as jest.MockedFunction<typeof formatMoney>;
 
-const renderWithProviders = (client_config = {}) => {
+const defaultAccounts = [
+    { account_id: 'CR123', account_type: 'real', balance: '10000.00', currency: 'USD' },
+    { account_id: 'VRTC456', account_type: 'demo', balance: '5000.00', currency: 'USD' },
+];
+
+const renderWithProviders = (client_config = {}, props_override = {}) => {
     const default_mock_store = mockStore({
         client: {
             loginid: 'CR123',
@@ -61,10 +50,18 @@ const renderWithProviders = (client_config = {}) => {
         },
     });
 
+    const default_props = {
+        accounts: defaultAccounts,
+        isLoading: false,
+        error: null,
+        refetch: jest.fn(),
+        ...props_override,
+    };
+
     return render(
         <APIProvider>
             <StoreProvider store={default_mock_store}>
-                <AccountInfo />
+                <AccountInfo {...default_props} />
             </StoreProvider>
         </APIProvider>
     );
@@ -75,17 +72,6 @@ describe('AccountInfo component', () => {
         jest.clearAllMocks();
         mockGetAccountType.mockReset();
         mockFormatMoney.mockImplementation((_currency, balance) => String(balance));
-        // Reset to default mock with both account types
-        mockUseDerivativesAccount.mockReturnValue({
-            data: {
-                data: [
-                    { account_id: 'CR123', account_type: 'real', balance: '10000.00', currency: 'USD' },
-                    { account_id: 'VRTC456', account_type: 'demo', balance: '5000.00', currency: 'USD' },
-                ],
-            },
-            isLoading: false,
-            error: null,
-        });
     });
 
     it('should have "acc-info--is-demo" class when account_type is "demo"', () => {
@@ -149,20 +135,17 @@ describe('AccountInfo component', () => {
 
     describe('Demo-only account behavior', () => {
         it('should hide chevron icon for demo-only accounts', () => {
-            // Mock useDerivativesAccount to return only demo accounts
-            mockUseDerivativesAccount.mockReturnValue({
-                data: {
-                    data: [{ account_id: 'VRTC456', account_type: 'demo', balance: '5000.00', currency: 'USD' }],
-                },
-                isLoading: false,
-                error: null,
-            });
-
             mockGetAccountType.mockReturnValue('demo');
-            renderWithProviders({
-                currency: 'USD',
-                balance: 1000,
-            });
+            renderWithProviders(
+                {
+                    currency: 'USD',
+                    balance: 1000,
+                },
+                {
+                    // Pass only demo accounts as props
+                    accounts: [{ account_id: 'VRTC456', account_type: 'demo', balance: '5000.00', currency: 'USD' }],
+                }
+            );
 
             expect(screen.queryByTestId('chevron-icon')).not.toBeInTheDocument();
         });
@@ -178,20 +161,17 @@ describe('AccountInfo component', () => {
         });
 
         it('should not render AccountSwitcher for demo-only accounts', () => {
-            // Mock useDerivativesAccount to return only demo accounts
-            mockUseDerivativesAccount.mockReturnValue({
-                data: {
-                    data: [{ account_id: 'VRTC456', account_type: 'demo', balance: '5000.00', currency: 'USD' }],
-                },
-                isLoading: false,
-                error: null,
-            });
-
             mockGetAccountType.mockReturnValue('demo');
-            renderWithProviders({
-                currency: 'USD',
-                balance: 1000,
-            });
+            renderWithProviders(
+                {
+                    currency: 'USD',
+                    balance: 1000,
+                },
+                {
+                    // Pass only demo accounts as props
+                    accounts: [{ account_id: 'VRTC456', account_type: 'demo', balance: '5000.00', currency: 'USD' }],
+                }
+            );
 
             expect(screen.queryByTestId('account-switcher')).not.toBeInTheDocument();
         });
@@ -207,20 +187,17 @@ describe('AccountInfo component', () => {
         });
 
         it('should apply acc-info--no-switcher class for demo-only accounts', () => {
-            // Mock useDerivativesAccount to return only demo accounts
-            mockUseDerivativesAccount.mockReturnValue({
-                data: {
-                    data: [{ account_id: 'VRTC456', account_type: 'demo', balance: '5000.00', currency: 'USD' }],
-                },
-                isLoading: false,
-                error: null,
-            });
-
             mockGetAccountType.mockReturnValue('demo');
-            renderWithProviders({
-                currency: 'USD',
-                balance: 1000,
-            });
+            renderWithProviders(
+                {
+                    currency: 'USD',
+                    balance: 1000,
+                },
+                {
+                    // Pass only demo accounts as props
+                    accounts: [{ account_id: 'VRTC456', account_type: 'demo', balance: '5000.00', currency: 'USD' }],
+                }
+            );
 
             const accInfoElement = screen.getByTestId('dt_acc_info');
             expect(accInfoElement).toHaveClass('acc-info--no-switcher');

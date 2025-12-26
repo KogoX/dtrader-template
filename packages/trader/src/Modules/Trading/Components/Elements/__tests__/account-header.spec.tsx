@@ -32,6 +32,7 @@ const mockUseDerivativesAccount = jest.fn(() => ({
     },
     isLoading: false,
     error: null,
+    refetch: jest.fn(),
 }));
 
 jest.mock('@deriv/api', () => ({
@@ -99,6 +100,7 @@ describe('AccountHeader', () => {
             },
             isLoading: false,
             error: null,
+            refetch: jest.fn(),
         });
     });
 
@@ -179,6 +181,7 @@ describe('AccountHeader', () => {
                 },
                 isLoading: false,
                 error: null,
+                refetch: jest.fn(),
             });
 
             const demo_store = mockStore({
@@ -475,6 +478,7 @@ describe('AccountHeader', () => {
                 },
                 isLoading: false,
                 error: null,
+                refetch: jest.fn(),
             });
 
             const demo_store = mockStore({
@@ -554,6 +558,7 @@ describe('AccountHeader', () => {
                     },
                     isLoading: false,
                     error: null,
+                    refetch: jest.fn(),
                 });
 
                 const demo_store = mockStore({
@@ -613,6 +618,7 @@ describe('AccountHeader', () => {
                     },
                     isLoading: false,
                     error: null,
+                    refetch: jest.fn(),
                 });
 
                 const callOrder: string[] = [];
@@ -656,6 +662,7 @@ describe('AccountHeader', () => {
                     },
                     isLoading: false,
                     error: null,
+                    refetch: jest.fn(),
                 });
 
                 const demo_store = mockStore({
@@ -687,6 +694,7 @@ describe('AccountHeader', () => {
                     },
                     isLoading: false,
                     error: null,
+                    refetch: jest.fn(),
                 });
 
                 const demo_store = mockStore({

@@ -204,16 +204,18 @@ const AccountHeader = observer(
                             <Skeleton height={48} width={240} />
                         </React.Fragment>
                     ) : (
-                        renderAccountInfo()
+                        <React.Fragment>
+                            {renderAccountInfo()}
+                            <AccountSwitcherIntroTooltip
+                                is_logged_in={is_logged_in}
+                                is_dark_mode={ui.is_dark_mode_on}
+                                has_multiple_accounts={hasMultipleAccounts}
+                                account_switcher_ref={account_switcher_container_ref}
+                                onAccountSwitcherHighlight={handleAccountSwitcherHighlight}
+                            />
+                        </React.Fragment>
                     )}
                 </div>
-                <AccountSwitcherIntroTooltip
-                    is_logged_in={is_logged_in}
-                    is_dark_mode={ui.is_dark_mode_on}
-                    has_multiple_accounts={hasMultipleAccounts}
-                    account_switcher_ref={account_switcher_container_ref}
-                    onAccountSwitcherHighlight={handleAccountSwitcherHighlight}
-                />
             </React.Fragment>
         );
     }
