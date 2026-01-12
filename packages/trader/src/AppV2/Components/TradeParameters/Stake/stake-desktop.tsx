@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import { getCurrencyDisplayCode } from '@deriv/shared';
 import { Localize } from '@deriv-com/translations';
 
-import { ValueChips, TabSelector } from 'AppV2/Components/InputPopover';
-import { TradeParameterPopover } from 'AppV2/Components/TradeParameters/Shared';
+import { TabSelector, ValueChips } from 'AppV2/Components/InputPopover';
+import { TradeParameterPopover, useTradeParameterPopover } from 'AppV2/Components/TradeParameters/Shared';
 import useTradeError from 'AppV2/Hooks/useTradeError';
 import { getDisplayedContractTypes } from 'AppV2/Utils/trade-types-utils';
 import { useTraderStore } from 'Stores/useTraderStores';
@@ -15,6 +15,35 @@ import { TTradeParametersProps } from '../trade-parameters';
 import StakeInputDesktop from './stake-input-desktop';
 
 const STAKE_CHIP_VALUES = [1, 5, 10, 15, 20, 25, 30, 40, 50, 100];
+
+const StakePopoverContent: React.FC<{
+    active_tab: 'chips' | 'input';
+    amount: number;
+    currency: string;
+    is_open: boolean;
+    onChipSelect: (amount: number) => void;
+}> = ({ active_tab, amount, currency, is_open, onChipSelect }) => {
+    const { closePopover } = useTradeParameterPopover();
+
+    const handleChipSelectAndClose = useCallback(
+        (chip_amount: number) => {
+            onChipSelect(chip_amount);
+            closePopover();
+        },
+        [onChipSelect, closePopover]
+    );
+
+    return active_tab === 'chips' ? (
+        <ValueChips
+            values={STAKE_CHIP_VALUES}
+            selectedValue={amount}
+            onSelect={handleChipSelectAndClose}
+            formatValue={val => `${val} ${getCurrencyDisplayCode(currency)}`}
+        />
+    ) : (
+        <StakeInputDesktop onClose={closePopover} is_open={is_open} />
+    );
+};
 
 const Stake = observer(({ is_minimized }: TTradeParametersProps) => {
     const {
@@ -52,9 +81,8 @@ const Stake = observer(({ is_minimized }: TTradeParametersProps) => {
     const handleChipSelect = React.useCallback(
         (chip_amount: number) => {
             onChange({ target: { name: 'amount', value: chip_amount } });
-            onClose();
         },
-        [onChange, onClose]
+        [onChange]
     );
 
     return (
@@ -69,16 +97,13 @@ const Stake = observer(({ is_minimized }: TTradeParametersProps) => {
             onOpen={() => setIsOpen(true)}
             onClose={onClose}
         >
-            {active_tab === 'chips' ? (
-                <ValueChips
-                    values={STAKE_CHIP_VALUES}
-                    selectedValue={amount}
-                    onSelect={handleChipSelect}
-                    formatValue={val => `${val} ${getCurrencyDisplayCode(currency)}`}
-                />
-            ) : (
-                <StakeInputDesktop onClose={onClose} is_open={is_open} />
-            )}
+            <StakePopoverContent
+                active_tab={active_tab}
+                amount={amount}
+                currency={currency}
+                is_open={is_open}
+                onChipSelect={handleChipSelect}
+            />
         </TradeParameterPopover>
     );
 });

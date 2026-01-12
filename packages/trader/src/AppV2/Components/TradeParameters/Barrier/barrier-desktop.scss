@@ -1,17 +1,10 @@
-@import '../../InputPopover/vertical-tab-selector.scss';
-
-.input-popover.barrier-popover {
-    width: 42.6rem;
-    height: 26rem;
-}
-
 .barrier-popover {
+    height: 26rem;
+
     &__layout {
         display: flex;
         width: 100%;
         height: 100%;
-        padding: var(--core-spacing-800);
-        padding-left: 0;
         gap: var(--core-spacing-800);
     }
 

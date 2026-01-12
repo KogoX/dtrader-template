@@ -11,7 +11,7 @@
 .input-popover {
     position: fixed;
     width: 28rem;
-    height: 36rem;
+    height: auto;
     background-color: var(--semantic-color-slate-solid-surface-frame-low);
     box-shadow: 0 0.4rem 1.6rem rgba(0, 0, 0, 0.16);
     z-index: 1001;
@@ -19,4 +19,7 @@
     flex-direction: column;
     overflow: hidden;
     border-radius: 1.6rem;
+    border: 1px solid var(--color-surface-border);
+    padding: var(--core-spacing-800);
+    gap: var(--core-spacing-800);
 }

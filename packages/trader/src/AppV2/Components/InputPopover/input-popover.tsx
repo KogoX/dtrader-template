@@ -30,6 +30,7 @@ const InputPopover = ({
                 style={{
                     top: `${position.top}px`,
                     left: `${position.left}px`,
+                    width: `${popoverWidth}px`,
                 }}
             >
                 {children}

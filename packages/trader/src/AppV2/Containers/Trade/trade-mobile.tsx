@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { observer } from 'mobx-react-lite';
 
 import { Loading } from '@deriv/components';
-import { useLocalStorageData } from '@deriv/api';
+import { useLocalStorageData, useMobileBridge } from '@deriv/api';
 import { getSymbolDisplayName, trackAnalyticsEvent } from '@deriv/shared';
 import { useStore } from '@deriv/stores';
 
@@ -16,7 +16,6 @@ import TradeErrorSnackbar from 'AppV2/Components/TradeErrorSnackbar';
 import { TradeParameters, TradeParametersContainer } from 'AppV2/Components/TradeParameters';
 import useContractsFor from 'AppV2/Hooks/useContractsFor';
 import useDefaultSymbol from 'AppV2/Hooks/useDefaultSymbol';
-import { useMobileBridge } from 'App/Hooks/useMobileBridge';
 import { getChartHeight, HEIGHT } from 'AppV2/Utils/layout-utils';
 import { getDisplayedContractTypes } from 'AppV2/Utils/trade-types-utils';
 import { isDigitTradeType } from 'Modules/Trading/Helpers/digits';
@@ -33,6 +32,7 @@ const Trade = observer(() => {
         client,
         common: { current_language, network_status },
         ui: { is_dark_mode_on },
+        contract_trade,
     } = useStore();
     const { isBridgeAvailable } = useMobileBridge();
     const { is_logged_in } = client;
@@ -114,6 +114,15 @@ const Trade = observer(() => {
         return onUnmount;
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [current_language, network_status.class]);
+
+    // Clear contract markers when navigating to trade page from reports
+    React.useEffect(() => {
+        // Clear any existing contract markers from closed contracts
+        if (contract_trade && 'clearClosedContractMarkers' in contract_trade) {
+            contract_trade.clearClosedContractMarkers();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     return (
         <div className='trade' onScroll={onScroll} data-testid='dt_trade-mobile'>

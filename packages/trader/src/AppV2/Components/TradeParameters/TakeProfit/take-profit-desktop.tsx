@@ -4,13 +4,18 @@ import { observer } from 'mobx-react-lite';
 import { getCurrencyDisplayCode } from '@deriv/shared';
 import { Localize } from '@deriv-com/translations';
 
-import { TradeParameterPopover } from 'AppV2/Components/TradeParameters/Shared';
+import { TradeParameterPopover, useTradeParameterPopover } from 'AppV2/Components/TradeParameters/Shared';
 import useTradeError from 'AppV2/Hooks/useTradeError';
 import { useTraderStore } from 'Stores/useTraderStores';
 
 import { TTradeParametersProps } from '../trade-parameters';
 
 import TakeProfitInputDesktop from './take-profit-input-desktop';
+
+const TakeProfitPopoverContent: React.FC<{ is_open: boolean }> = ({ is_open }) => {
+    const { closePopover } = useTradeParameterPopover();
+    return <TakeProfitInputDesktop onClose={closePopover} is_open={is_open} />;
+};
 
 const TakeProfitDesktop = observer(({ is_minimized }: TTradeParametersProps) => {
     const { currency, has_open_accu_contract, has_take_profit, is_market_closed, take_profit } = useTraderStore();
@@ -33,7 +38,7 @@ const TakeProfitDesktop = observer(({ is_minimized }: TTradeParametersProps) => 
             onOpen={() => setIsOpen(true)}
             onClose={onClose}
         >
-            <TakeProfitInputDesktop onClose={onClose} is_open={is_open} />
+            <TakeProfitPopoverContent is_open={is_open} />
         </TradeParameterPopover>
     );
 });

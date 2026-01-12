@@ -1,13 +1,13 @@
-import React, { useCallback, useRef, useState } from 'react';
-import clsx from 'clsx';
+import React, { useCallback, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { Text, TextField } from '@deriv-com/quill-ui';
+import { Text } from '@deriv-com/quill-ui';
 import { Localize, localize } from '@deriv-com/translations';
 
 import { useTraderStore } from 'Stores/useTraderStores';
 
-import { InputPopover, TabSelector, ValueChips } from '../../InputPopover';
+import { TabSelector, ValueChips } from '../../InputPopover';
+import TradeParameterPopover, { useTradeParameterPopover } from '../Shared/TradeParameterPopover';
 
 import DurationEndTimeDesktop from './duration-end-time-desktop';
 import DurationHoursInputDesktop from './duration-hours-input-desktop';
@@ -23,17 +23,124 @@ interface DurationDesktopProps {
     is_minimized?: boolean;
 }
 
+const DurationPopoverContent: React.FC<{
+    selectedUnit: string;
+    activeTab: 'chips' | 'input';
+    selectedDuration: number;
+    onDurationSelect: (value: number) => void;
+    onHourSelect: (hours: number) => void;
+    onUnitSelect: (unit: string) => void;
+    onTabChange: (tab: 'chips' | 'input') => void;
+    formatTickValue: (value: number) => string;
+    formatSecondsValue: (value: number) => string;
+    formatMinutesValue: (value: number) => string;
+    formatHoursValue: (value: number) => string;
+}> = ({
+    selectedUnit,
+    activeTab,
+    selectedDuration,
+    onDurationSelect,
+    onHourSelect,
+    onUnitSelect,
+    onTabChange,
+    formatTickValue,
+    formatSecondsValue,
+    formatMinutesValue,
+    formatHoursValue,
+}) => {
+    const { closePopover } = useTradeParameterPopover();
+
+    const handleDurationSelectAndClose = useCallback(
+        (value: number) => {
+            onDurationSelect(value);
+            closePopover();
+        },
+        [onDurationSelect, closePopover]
+    );
+
+    const handleHourSelectAndClose = useCallback(
+        (hours: number) => {
+            onHourSelect(hours);
+            closePopover();
+        },
+        [onHourSelect, closePopover]
+    );
+
+    return (
+        <div className='duration-popover__layout'>
+            <div className='duration-popover__sidebar'>
+                <DurationUnitSelector selectedUnit={selectedUnit} onSelectUnit={onUnitSelect} />
+            </div>
+            <div className='duration-popover__main'>
+                {(selectedUnit === 's' || selectedUnit === 'm' || selectedUnit === 'h') && (
+                    <div className='duration-popover__header'>
+                        <TabSelector activeTab={activeTab} onTabChange={onTabChange} />
+                    </div>
+                )}
+                <div className='duration-popover__content'>
+                    {selectedUnit === 't' ? (
+                        <ValueChips
+                            values={DURATION_TICK_VALUES}
+                            selectedValue={selectedDuration}
+                            onSelect={handleDurationSelectAndClose}
+                            formatValue={formatTickValue}
+                        />
+                    ) : selectedUnit === 's' ? (
+                        activeTab === 'chips' ? (
+                            <ValueChips
+                                values={DURATION_SECONDS_VALUES}
+                                selectedValue={selectedDuration}
+                                onSelect={handleDurationSelectAndClose}
+                                formatValue={formatSecondsValue}
+                            />
+                        ) : (
+                            <DurationInputDesktop unit='s' onClose={closePopover} />
+                        )
+                    ) : selectedUnit === 'm' ? (
+                        activeTab === 'chips' ? (
+                            <ValueChips
+                                values={DURATION_MINUTES_VALUES}
+                                selectedValue={selectedDuration}
+                                onSelect={handleDurationSelectAndClose}
+                                formatValue={formatMinutesValue}
+                            />
+                        ) : (
+                            <DurationInputDesktop unit='m' onClose={closePopover} />
+                        )
+                    ) : selectedUnit === 'h' ? (
+                        activeTab === 'chips' ? (
+                            <ValueChips
+                                values={DURATION_HOURS_VALUES}
+                                selectedValue={Math.floor(selectedDuration / 60)}
+                                onSelect={handleHourSelectAndClose}
+                                formatValue={formatHoursValue}
+                            />
+                        ) : (
+                            <DurationHoursInputDesktop onClose={closePopover} />
+                        )
+                    ) : selectedUnit === 'end_time' ? (
+                        <DurationEndTimeDesktop onClose={closePopover} />
+                    ) : (
+                        <div className='duration-popover__coming-soon'>
+                            <Text size='md' color='quill-typography-default'>
+                                <Localize i18n_default_text='Coming soon' />
+                            </Text>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const DurationDesktop: React.FC<DurationDesktopProps> = observer(({ is_minimized }) => {
     const { duration, duration_unit, onChangeMultiple, is_market_closed } = useTraderStore();
 
-    const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const [selectedUnit, setSelectedUnit] = useState('t'); // Default to Ticks
     const [selectedDuration, setSelectedDuration] = useState(duration);
     const [activeTab, setActiveTab] = useState<'chips' | 'input'>('chips');
-    const inputRef = useRef<HTMLDivElement>(null);
 
     const handleOpenPopover = useCallback(() => {
-        setIsPopoverOpen(true);
         setSelectedUnit(
             duration_unit === 's'
                 ? 's'
@@ -50,7 +157,6 @@ const DurationDesktop: React.FC<DurationDesktopProps> = observer(({ is_minimized
     }, [duration, duration_unit]);
 
     const handleClosePopover = useCallback(() => {
-        setIsPopoverOpen(false);
         setActiveTab('chips'); // Reset to chips tab on close
     }, []);
 
@@ -72,9 +178,22 @@ const DurationDesktop: React.FC<DurationDesktopProps> = observer(({ is_minimized
                 duration: value,
                 expiry_type: 'duration',
             });
-            handleClosePopover();
         },
-        [selectedUnit, onChangeMultiple, handleClosePopover]
+        [selectedUnit, onChangeMultiple]
+    );
+
+    const handleHourSelect = useCallback(
+        (hours: number) => {
+            const totalMinutes = hours * 60;
+            setSelectedDuration(totalMinutes);
+            // Save as minutes
+            onChangeMultiple({
+                duration_unit: 'm',
+                duration: totalMinutes,
+                expiry_type: 'duration',
+            });
+        },
+        [onChangeMultiple]
     );
 
     const formatTickValue = useCallback((value: number) => {
@@ -139,104 +258,30 @@ const DurationDesktop: React.FC<DurationDesktopProps> = observer(({ is_minimized
     }, [duration, duration_unit, formatTickValue, formatSecondsValue, formatMinutesValue]);
 
     return (
-        <>
-            <div ref={inputRef}>
-                <TextField
-                    variant='fill'
-                    readOnly
-                    label={
-                        <Localize i18n_default_text='Duration' key={`duration${is_minimized ? '-minimized' : ''}`} />
-                    }
-                    value={getDisplayValue()}
-                    noStatusIcon
-                    disabled={is_market_closed}
-                    className={clsx('trade-params__option', is_minimized && 'trade-params__option--minimized')}
-                    onClick={handleOpenPopover}
-                />
-            </div>
-
-            <InputPopover
-                isOpen={isPopoverOpen}
-                onClose={handleClosePopover}
-                triggerRef={inputRef}
-                popoverWidth={424}
-                className='duration-popover'
-            >
-                <div className='duration-popover__layout'>
-                    <div className='duration-popover__sidebar'>
-                        <DurationUnitSelector selectedUnit={selectedUnit} onSelectUnit={handleUnitSelect} />
-                    </div>
-                    <div className='duration-popover__main'>
-                        {(selectedUnit === 's' || selectedUnit === 'm' || selectedUnit === 'h') && (
-                            <div className='duration-popover__header'>
-                                <TabSelector activeTab={activeTab} onTabChange={handleTabChange} />
-                            </div>
-                        )}
-                        <div className='duration-popover__content'>
-                            {selectedUnit === 't' ? (
-                                <ValueChips
-                                    values={DURATION_TICK_VALUES}
-                                    selectedValue={selectedDuration}
-                                    onSelect={handleDurationSelect}
-                                    formatValue={formatTickValue}
-                                />
-                            ) : selectedUnit === 's' ? (
-                                activeTab === 'chips' ? (
-                                    <ValueChips
-                                        values={DURATION_SECONDS_VALUES}
-                                        selectedValue={selectedDuration}
-                                        onSelect={handleDurationSelect}
-                                        formatValue={formatSecondsValue}
-                                    />
-                                ) : (
-                                    <DurationInputDesktop unit='s' onClose={handleClosePopover} />
-                                )
-                            ) : selectedUnit === 'm' ? (
-                                activeTab === 'chips' ? (
-                                    <ValueChips
-                                        values={DURATION_MINUTES_VALUES}
-                                        selectedValue={selectedDuration}
-                                        onSelect={handleDurationSelect}
-                                        formatValue={formatMinutesValue}
-                                    />
-                                ) : (
-                                    <DurationInputDesktop unit='m' onClose={handleClosePopover} />
-                                )
-                            ) : selectedUnit === 'h' ? (
-                                activeTab === 'chips' ? (
-                                    <ValueChips
-                                        values={DURATION_HOURS_VALUES}
-                                        selectedValue={Math.floor(selectedDuration / 60)} // Convert minutes to hours for chip selection
-                                        onSelect={hours => {
-                                            const totalMinutes = hours * 60;
-                                            setSelectedDuration(totalMinutes);
-                                            // Save as minutes
-                                            onChangeMultiple({
-                                                duration_unit: 'm',
-                                                duration: totalMinutes,
-                                                expiry_type: 'duration',
-                                            });
-                                            handleClosePopover();
-                                        }}
-                                        formatValue={formatHoursValue}
-                                    />
-                                ) : (
-                                    <DurationHoursInputDesktop onClose={handleClosePopover} />
-                                )
-                            ) : selectedUnit === 'end_time' ? (
-                                <DurationEndTimeDesktop onClose={handleClosePopover} />
-                            ) : (
-                                <div className='duration-popover__coming-soon'>
-                                    <Text size='md' color='quill-typography-default'>
-                                        <Localize i18n_default_text='Coming soon' />
-                                    </Text>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </InputPopover>
-        </>
+        <TradeParameterPopover
+            popoverWidth={444}
+            label={<Localize i18n_default_text='Duration' key={`duration${is_minimized ? '-minimized' : ''}`} />}
+            is_minimized={is_minimized}
+            disabled={is_market_closed}
+            popover_classname='duration-popover'
+            value={getDisplayValue()}
+            onOpen={handleOpenPopover}
+            onClose={handleClosePopover}
+        >
+            <DurationPopoverContent
+                selectedUnit={selectedUnit}
+                activeTab={activeTab}
+                selectedDuration={selectedDuration}
+                onDurationSelect={handleDurationSelect}
+                onHourSelect={handleHourSelect}
+                onUnitSelect={handleUnitSelect}
+                onTabChange={handleTabChange}
+                formatTickValue={formatTickValue}
+                formatSecondsValue={formatSecondsValue}
+                formatMinutesValue={formatMinutesValue}
+                formatHoursValue={formatHoursValue}
+            />
+        </TradeParameterPopover>
     );
 });
 

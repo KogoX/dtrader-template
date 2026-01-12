@@ -12,10 +12,25 @@ type TTradeParameterPopoverProps = {
     disabled?: boolean;
     has_error?: boolean;
     popover_classname: string;
+    popoverWidth?: number;
     children: React.ReactNode;
     header?: React.ReactNode;
     onOpen?: () => void;
     onClose?: () => void;
+};
+
+type TTradeParameterPopoverContext = {
+    closePopover: () => void;
+};
+
+export const TradeParameterPopoverContext = React.createContext<TTradeParameterPopoverContext | null>(null);
+
+export const useTradeParameterPopover = () => {
+    const context = React.useContext(TradeParameterPopoverContext);
+    if (!context) {
+        throw new Error('useTradeParameterPopover must be used within TradeParameterPopover');
+    }
+    return context;
 };
 
 const TradeParameterPopover = ({
@@ -25,6 +40,7 @@ const TradeParameterPopover = ({
     disabled,
     has_error,
     popover_classname,
+    popoverWidth,
     children,
     header,
     onOpen: onOpenCallback,
@@ -43,6 +59,12 @@ const TradeParameterPopover = ({
         onCloseCallback?.();
     }, [onCloseCallback]);
 
+    const closePopover = React.useCallback(() => {
+        onClose();
+    }, [onClose]);
+
+    const contextValue = React.useMemo(() => ({ closePopover }), [closePopover]);
+
     return (
         <React.Fragment>
             <div ref={field_ref}>
@@ -58,9 +80,17 @@ const TradeParameterPopover = ({
                     status={has_error ? 'error' : 'neutral'}
                 />
             </div>
-            <InputPopover isOpen={is_open} onClose={onClose} triggerRef={field_ref} className={popover_classname}>
-                {header && <div className={`${popover_classname}__header`}>{header}</div>}
-                {children}
+            <InputPopover
+                isOpen={is_open}
+                onClose={onClose}
+                triggerRef={field_ref}
+                className={popover_classname}
+                popoverWidth={popoverWidth}
+            >
+                <TradeParameterPopoverContext.Provider value={contextValue}>
+                    {header && <div className={`${popover_classname}__header`}>{header}</div>}
+                    {children}
+                </TradeParameterPopoverContext.Provider>
             </InputPopover>
         </React.Fragment>
     );

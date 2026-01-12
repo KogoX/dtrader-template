@@ -1,8 +1,5 @@
-@import '../Shared/trade-parameter-popover.scss';
-
 .take-profit-popover {
-    @extend .trade-parameter-popover;
-    height: auto;
+    height: 32.8rem;
 }
 
 .take-profit-input-desktop {
@@ -11,7 +8,6 @@
         flex-direction: column;
         gap: var(--core-spacing-800);
         height: 100%;
-        min-height: 30rem;
     }
 
     &__header {

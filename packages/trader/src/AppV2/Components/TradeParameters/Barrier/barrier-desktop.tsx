@@ -1,13 +1,10 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
-import clsx from 'clsx';
+import React, { useCallback, useMemo, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
-import { TextField } from '@deriv-com/quill-ui';
 import { Localize } from '@deriv-com/translations';
 
+import { TradeParameterPopover, useTradeParameterPopover } from 'AppV2/Components/TradeParameters/Shared';
 import { useTraderStore } from 'Stores/useTraderStores';
-
-import { InputPopover } from '../../InputPopover';
 
 import BarrierContentDesktop from './barrier-content-desktop';
 import BarrierTypeSelector from './barrier-type-selector';
@@ -23,60 +20,47 @@ const getBarrierType = (barrier: string): string => {
     return 'fixed_barrier';
 };
 
+const BarrierPopoverContent: React.FC<{
+    selectedType: string;
+    onSelectType: (type: string) => void;
+}> = ({ selectedType, onSelectType }) => {
+    const { closePopover } = useTradeParameterPopover();
+
+    return (
+        <div className='barrier-popover__layout'>
+            <div className='barrier-popover__sidebar'>
+                <BarrierTypeSelector selectedType={selectedType} onSelectType={onSelectType} />
+            </div>
+            <div className='barrier-popover__main'>
+                <div className='barrier-popover__content'>
+                    <BarrierContentDesktop barrierType={selectedType} onClose={closePopover} />
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const BarrierDesktop: React.FC<BarrierDesktopProps> = observer(({ is_minimized }) => {
     const { barrier_1, is_market_closed } = useTraderStore();
 
-    const [isPopoverOpen, setIsPopoverOpen] = useState(false);
     const initialType = useMemo(() => getBarrierType(barrier_1), [barrier_1]);
     const [selectedType, setSelectedType] = useState(initialType);
-    const inputRef = useRef<HTMLDivElement>(null);
-
-    const handleOpenPopover = useCallback(() => {
-        setIsPopoverOpen(true);
-    }, []);
-
-    const handleClosePopover = useCallback(() => {
-        setIsPopoverOpen(false);
-    }, []);
 
     const handleTypeSelect = useCallback((type: string) => {
         setSelectedType(type);
     }, []);
 
     return (
-        <>
-            <div ref={inputRef}>
-                <TextField
-                    variant='fill'
-                    readOnly
-                    label={<Localize i18n_default_text='Barrier' key={`barrier${is_minimized ? '-minimized' : ''}`} />}
-                    value={barrier_1}
-                    noStatusIcon
-                    disabled={is_market_closed}
-                    className={clsx('trade-params__option', is_minimized && 'trade-params__option--minimized')}
-                    onClick={handleOpenPopover}
-                />
-            </div>
-
-            <InputPopover
-                isOpen={isPopoverOpen}
-                onClose={handleClosePopover}
-                triggerRef={inputRef}
-                popoverWidth={424}
-                className='barrier-popover'
-            >
-                <div className='barrier-popover__layout'>
-                    <div className='barrier-popover__sidebar'>
-                        <BarrierTypeSelector selectedType={selectedType} onSelectType={handleTypeSelect} />
-                    </div>
-                    <div className='barrier-popover__main'>
-                        <div className='barrier-popover__content'>
-                            <BarrierContentDesktop barrierType={selectedType} onClose={handleClosePopover} />
-                        </div>
-                    </div>
-                </div>
-            </InputPopover>
-        </>
+        <TradeParameterPopover
+            popoverWidth={424}
+            label={<Localize i18n_default_text='Barrier' key={`barrier${is_minimized ? '-minimized' : ''}`} />}
+            value={barrier_1}
+            is_minimized={is_minimized}
+            disabled={is_market_closed}
+            popover_classname='barrier-popover'
+        >
+            <BarrierPopoverContent selectedType={selectedType} onSelectType={handleTypeSelect} />
+        </TradeParameterPopover>
     );
 });
 

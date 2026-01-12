@@ -1,1 +1,1 @@
-export { default as TradeParameterPopover } from './TradeParameterPopover';
+export { default as TradeParameterPopover, useTradeParameterPopover } from './TradeParameterPopover';

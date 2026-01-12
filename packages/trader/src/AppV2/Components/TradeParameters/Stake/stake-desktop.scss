@@ -1,11 +1,3 @@
-@import '../Shared/trade-parameter-popover.scss';
-@import '../../InputPopover/value-chips.scss';
-
-.stake-popover {
-    @extend .trade-parameter-popover;
-    height: 36rem;
-}
-
 .stake-chips {
     &__grid {
         display: grid;

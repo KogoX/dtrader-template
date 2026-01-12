@@ -8,7 +8,7 @@ import { useTraderStore } from 'Stores/useTraderStores';
 
 interface BarrierContentDesktopProps {
     barrierType: string;
-    onClose: () => void;
+    onClose?: () => void;
 }
 
 const BarrierContentDesktop: React.FC<BarrierContentDesktopProps> = observer(({ barrierType, onClose }) => {
@@ -32,7 +32,7 @@ const BarrierContentDesktop: React.FC<BarrierContentDesktopProps> = observer(({ 
             newValue = `-${inputValue}`;
         }
         onChange({ target: { name: 'barrier_1', value: newValue } });
-        onClose();
+        onClose?.();
     };
 
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
