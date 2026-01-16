@@ -10,6 +10,7 @@ import { TabSelector } from '../../InputPopover';
 import { ChipsWithInputToggle } from '../Shared';
 import TradeParameterPopover, { useTradeParameterPopover } from '../Shared/TradeParameterPopover';
 
+import DurationEndDateDesktop from './duration-end-date-desktop';
 import DurationEndTimeDesktop from './duration-end-time-desktop';
 import DurationHoursInputDesktop from './duration-hours-input-desktop';
 import DurationInputDesktop from './duration-input-desktop';
@@ -145,13 +146,7 @@ const DurationPopoverContent: React.FC<{
                 selectedValue: selectedDuration,
                 onSelect: handleEndDateSelectAndClose,
                 formatValue: formatEndDateValue,
-                inputComponent: (
-                    <div className='duration-popover__coming-soon'>
-                        <Text size='md' color='quill-typography-default'>
-                            <Localize i18n_default_text='End date manual input coming soon' />
-                        </Text>
-                    </div>
-                ),
+                inputComponent: <DurationEndDateDesktop onClose={closePopover} />,
             },
         };
         return configs[selectedUnit] || null;
