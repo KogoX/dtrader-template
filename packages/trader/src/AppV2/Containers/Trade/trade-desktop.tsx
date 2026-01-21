@@ -12,7 +12,7 @@ import AccumulatorStats from 'AppV2/Components/AccumulatorStats';
 import OnboardingGuide from 'AppV2/Components/OnboardingGuide/GuideForPages';
 import PurchaseButton from 'AppV2/Components/PurchaseButton';
 import TradeErrorSnackbar from 'AppV2/Components/TradeErrorSnackbar';
-import { TradeParameters, TradeParametersContainer } from 'AppV2/Components/TradeParameters';
+import { TradeParameters } from 'AppV2/Components/TradeParameters';
 // Commented out to use chart's native market selector instead
 // import MarketSelector from 'AppV2/Components/MarketSelector';
 import useContractsFor from 'AppV2/Hooks/useContractsFor';
@@ -135,10 +135,11 @@ const TradeDesktop = observer(() => {
                             </section>
                             {is_accumulator && <AccumulatorStats />}
                         </div>
-                        <TradeParametersContainer>
+                        <div className='trade-params'>
+                            <Guide show_guide_for_selected_contract />
                             <TradeParameters />
                             {!is_market_closed && <PurchaseButton />}
-                        </TradeParametersContainer>
+                        </div>
                     </div>
                     {!guide_dtrader_v2?.trade_page && is_logged_in && <OnboardingGuide type='trade_page' />}
                 </React.Fragment>
