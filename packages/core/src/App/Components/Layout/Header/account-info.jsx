@@ -11,26 +11,18 @@ import { useDevice } from '@deriv-com/ui';
 
 import AccountInfoWrapper from './account-info-wrapper';
 import AccountSwitcher from './account-switcher';
-import AccountSwitcherIntroTooltip from './AccountSwitcherIntroTooltip';
 
 const AccountInfo = observer(({ accounts = [], isLoading = false, error = null, refetch, onAccountSwitch }) => {
     const { localize } = useTranslations();
     const { isMobile } = useDevice();
 
     // Get client data from store
-    const { client, ui } = useStore();
-    const { loginid, is_logged_in, balance, currency } = client;
+    const { client } = useStore();
+    const { loginid, balance, currency } = client;
 
     // Dropdown open/close state
     const [is_dropdown_open, setIsDropdownOpen] = React.useState(false);
-    const [is_account_switcher_highlighted, setIsAccountSwitcherHighlighted] = React.useState(false);
     const dropdown_ref = React.useRef(null);
-    const account_switcher_container_ref = React.useRef(null);
-
-    // Handle account switcher highlight
-    const handleAccountSwitcherHighlight = React.useCallback(is_highlighted => {
-        setIsAccountSwitcherHighlighted(is_highlighted);
-    }, []);
 
     const accountType = getAccountType();
     const accountTypeHeader = accountType === 'real' ? localize('Real account') : localize('Demo account');
@@ -40,7 +32,6 @@ const AccountInfo = observer(({ accounts = [], isLoading = false, error = null, 
 
     // Determine if user has only demo accounts (to disable dropdown)
     const hasOnlyDemoAccounts = accounts.length > 0 && accounts.every(acc => acc.account_type === 'demo');
-    const hasMultipleAccounts = accounts.length > 1;
 
     // Close dropdown when clicking outside
     React.useEffect(() => {
@@ -62,14 +53,9 @@ const AccountInfo = observer(({ accounts = [], isLoading = false, error = null, 
 
     return (
         <React.Fragment>
-            <div
-                className={classNames('acc-info__wrapper', {
-                    'acc-info__wrapper--highlighted': is_account_switcher_highlighted,
-                })}
-                ref={dropdown_ref}
-            >
+            <div className='acc-info__wrapper' ref={dropdown_ref}>
                 <AccountInfoWrapper is_mobile={isMobile}>
-                    <div className='acc-info__container' ref={account_switcher_container_ref}>
+                    <div className='acc-info__container'>
                         <div
                             data-testid='dt_acc_info'
                             id='dt_core_account-info_acc-info'
@@ -131,13 +117,6 @@ const AccountInfo = observer(({ accounts = [], isLoading = false, error = null, 
                     />
                 )}
             </div>
-            <AccountSwitcherIntroTooltip
-                is_logged_in={is_logged_in}
-                is_dark_mode={ui.is_dark_mode_on}
-                has_multiple_accounts={hasMultipleAccounts}
-                account_switcher_ref={account_switcher_container_ref}
-                onAccountSwitcherHighlight={handleAccountSwitcherHighlight}
-            />
         </React.Fragment>
     );
 });
