@@ -55,8 +55,8 @@
         &__preview {
             position: relative;
             border-radius: var(--core-borderRadius-400);
-            height: 7.3rem;
-            width: 11.2rem;
+            height: 25.2rem;
+            width: 44.8rem;
 
             &__icon {
                 position: absolute;
@@ -85,8 +85,8 @@
         &:before {
             content: '';
             display: block;
-            height: 7.3rem;
-            width: 11.2rem;
+            height: 25.2rem;
+            width: 44.8rem;
             position: absolute;
             top: 0;
             inset-inline-start: 0;
@@ -99,13 +99,12 @@
             padding-block-start: var(--component-actionSheet-spacing-padding-md);
             margin-block-start: var(--component-actionSheet-spacing-padding-sm);
             display: flex;
-            justify-content: space-between;
             align-items: center;
             gap: var(--component-actionSheet-spacing-padding-sm);
         }
 
         &__description {
-            flex-grow: 1;
+            display: none;
         }
     }
 
@@ -192,9 +191,8 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-block-end: var(--component-actionSheet-spacing-padding-md);
-        width: 24.8rem;
-        height: 16.1rem;
+        width: 32rem;
+        height: 20.8rem;
         position: relative;
         margin-inline: auto;
 

@@ -21,21 +21,12 @@ const VideoPreview = ({ contract_type, toggleVideoPlayer, video_src }: TVideoPre
                 preload='auto'
                 responsive={false}
                 src={video_src}
-                width='112px'
-                height='73px'
+                width='448px'
+                height='252px'
             />
             <div className='guide-video__preview__icon__wrapper'>
                 <LabelPairedPlayMdFillIcon className='guide-video__preview__icon' />
             </div>
-        </div>
-        <div className='guide-video__description'>
-            <CaptionText bold color='quill-typography__color--default'>
-                <Localize i18n_default_text='How to trade ' />
-                {contract_type}?
-            </CaptionText>
-            <CaptionText color='quill-typography__color--default'>
-                <Localize i18n_default_text='Watch this video to learn about this trade type.' />
-            </CaptionText>
         </div>
     </div>
 );
