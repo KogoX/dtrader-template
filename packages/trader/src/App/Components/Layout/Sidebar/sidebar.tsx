@@ -2,6 +2,7 @@ import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 
+import { useMobileBridge } from '@deriv/api';
 import { Button, Flyout, Text } from '@deriv/components';
 import {
     DerivProductBrandLightDerivTraderLogoIcon,
@@ -19,8 +20,6 @@ import {
 import { getBrandUrl, routes } from '@deriv/shared';
 import { observer, useStore } from '@deriv/stores';
 import { Localize, localize, useTranslations } from '@deriv-com/translations';
-
-import { useMobileBridge } from '@deriv/api';
 
 import { PositionsDrawerContent, PositionsDrawerFooter } from '../../Elements/PositionsDrawer';
 
@@ -185,7 +184,7 @@ const Sidebar = observer(() => {
             case 'language':
                 return {
                     title: <Localize i18n_default_text='Language' />,
-                    content: <LanguageSelector />,
+                    content: <LanguageSelector onLanguageChange={closeFlyout} />,
                     footer: null,
                 };
             case 'account':
