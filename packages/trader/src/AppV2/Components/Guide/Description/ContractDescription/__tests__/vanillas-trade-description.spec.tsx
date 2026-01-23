@@ -4,6 +4,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { getTerm } from 'AppV2/Utils/contract-description-utils';
+import { CONTRACT_LIST } from 'AppV2/Utils/trade-types-utils';
 
 import VanillasTradeDescription from '../vanillas-trade-description';
 
@@ -13,14 +14,14 @@ jest.mock('@lottiefiles/dotlottie-react', () => ({
 
 describe('VanillasTradeDescription', () => {
     it('should render a proper content', () => {
-        render(<VanillasTradeDescription onTermClick={jest.fn()} />);
+        render(<VanillasTradeDescription contract_type={CONTRACT_LIST.VANILLAS} onTermClick={jest.fn()} />);
 
         expect(screen.getByText(/Vanilla options allow you to predict an upward/i)).toBeInTheDocument();
     });
 
     it('should call onTermClick if user clicks on term "payout"', async () => {
         const onTermClick = jest.fn();
-        render(<VanillasTradeDescription onTermClick={onTermClick} />);
+        render(<VanillasTradeDescription contract_type={CONTRACT_LIST.VANILLAS} onTermClick={onTermClick} />);
 
         await userEvent.click(screen.getByRole('button', { name: getTerm().PAYOUT.toLowerCase() }));
 
@@ -29,7 +30,7 @@ describe('VanillasTradeDescription', () => {
 
     it('should call onTermClick if user clicks on term "final price"', async () => {
         const onTermClick = jest.fn();
-        render(<VanillasTradeDescription onTermClick={onTermClick} />);
+        render(<VanillasTradeDescription contract_type={CONTRACT_LIST.VANILLAS} onTermClick={onTermClick} />);
 
         await userEvent.click(screen.getByRole('button', { name: getTerm().FINAL_PRICE.toLowerCase() }));
 
@@ -38,7 +39,7 @@ describe('VanillasTradeDescription', () => {
 
     it('should call onTermClick if user clicks on term "strike price"', async () => {
         const onTermClick = jest.fn();
-        render(<VanillasTradeDescription onTermClick={onTermClick} />);
+        render(<VanillasTradeDescription contract_type={CONTRACT_LIST.VANILLAS} onTermClick={onTermClick} />);
 
         await userEvent.click(screen.getByRole('button', { name: getTerm().STRIKE_PRICE.toLowerCase() }));
 
@@ -47,7 +48,7 @@ describe('VanillasTradeDescription', () => {
 
     it('should call onTermClick if user clicks on term "expiry"', async () => {
         const onTermClick = jest.fn();
-        render(<VanillasTradeDescription onTermClick={onTermClick} />);
+        render(<VanillasTradeDescription contract_type={CONTRACT_LIST.VANILLAS} onTermClick={onTermClick} />);
 
         await userEvent.click(screen.getByRole('button', { name: getTerm().EXPIRY.toLowerCase() }));
 
@@ -56,7 +57,7 @@ describe('VanillasTradeDescription', () => {
 
     it('should call onTermClick if user clicks on term "payout per point"', async () => {
         const onTermClick = jest.fn();
-        render(<VanillasTradeDescription onTermClick={onTermClick} />);
+        render(<VanillasTradeDescription contract_type={CONTRACT_LIST.VANILLAS} onTermClick={onTermClick} />);
 
         await userEvent.click(screen.getByRole('button', { name: getTerm().PAYOUT_PER_POINT.toLowerCase() }));
 
@@ -65,7 +66,7 @@ describe('VanillasTradeDescription', () => {
 
     it('should call onTermClick if user clicks on term "contract value"', async () => {
         const onTermClick = jest.fn();
-        render(<VanillasTradeDescription onTermClick={onTermClick} />);
+        render(<VanillasTradeDescription contract_type={CONTRACT_LIST.VANILLAS} onTermClick={onTermClick} />);
 
         await userEvent.click(screen.getByRole('button', { name: getTerm().CONTRACT_VALUE.toLowerCase() }));
 
