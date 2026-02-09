@@ -20,9 +20,9 @@ const BottomNav = ({ bottomNavItems }: BottomNavProps) => {
     const history = useHistory();
     const location = useLocation();
 
-    const navIndex = bottomNavItems?.findIndex(item => item.path === location.pathname);
+    const navIndex = bottomNavItems?.findIndex(item => item.path === location.pathname) ?? -1;
 
-    const [selectedIndex, setSelectedIndex] = React.useState(navIndex !== undefined && navIndex > -1 ? navIndex : 0);
+    const [selectedIndex, setSelectedIndex] = React.useState(navIndex >= 0 ? navIndex : 0);
 
     React.useEffect(() => {
         const currentIndex = bottomNavItems?.findIndex(item => item.path === location.pathname);

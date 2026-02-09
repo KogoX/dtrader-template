@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 
 import { useLocalStorageData, useMobileBridge } from '@deriv/api';
-import { getPositionsV2TabIndexFromURL } from '@deriv/shared';
+import { getPositionsV2TabIndexFromURL, routes } from '@deriv/shared';
 import { useStore } from '@deriv/stores';
 import { Tab } from '@deriv-com/quill-ui';
 import { Localize } from '@deriv-com/translations';
@@ -59,7 +59,9 @@ const Positions = observer(() => {
         }
 
         return () => {
-            const is_contract_details = history.location.pathname.startsWith('/contract/');
+            const is_contract_details = history.location.pathname.startsWith(
+                routes.contract.replace('/:contract_id', '')
+            );
             if (!is_contract_details) onUnmount();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps

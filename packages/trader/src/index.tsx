@@ -18,7 +18,7 @@ const AppV2Loader = makeLazyLoader(
     () => (
         <Loading.DTraderV2
             initial_app_loading
-            is_contract_details={window.location.pathname.startsWith('/contract/')}
+            is_contract_details={window.location.pathname.startsWith(routes.contract.replace('/:contract_id', ''))}
             is_positions={window.location.pathname === routes.trader_positions}
             is_closed_tab={getPositionsV2TabIndexFromURL() === 1}
         />
