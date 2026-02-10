@@ -266,33 +266,6 @@ jobs:
             - [ ] [Relevant validation based on changes]
             - [ ] Error states handled gracefully
 
-            ### 🎯 Feature-Specific Tests
-            [Only include sections relevant to the changes - adapt based on application domain]
-            - [ ] **[Feature/Module Name]:** [specific tests]
-            - [ ] **[Another Feature]:** [specific tests]
-
-            ### 🔄 State & Environment Variations
-            [Include only relevant variations based on the application]
-            - [ ] Test on **Desktop** (if web app)
-            - [ ] Test on **Mobile** (if web app/responsive)
-            - [ ] Test on **Tablet** (if relevant)
-            - [ ] Test **Logged in** state (if auth exists)
-            - [ ] Test **Logged out** state (if auth exists)
-            - [ ] Test behavior **after page refresh**
-            - [ ] Test with different **user roles** (if applicable)
-            - [ ] Test with different **data states** (empty, partial, full)
-
-            ### 🛡️ Regression Tests
-            - [ ] Verify [unchanged feature 1] still works
-            - [ ] Verify [unchanged feature 2] still works
-            - [ ] Check related areas not directly modified
-
-            ### 🌐 Cross-Browser/Platform (if applicable)
-            - [ ] Chrome/Chromium
-            - [ ] Firefox
-            - [ ] Safari
-            - [ ] Edge
-
             ---
 
             **To regenerate this checklist, comment `@checkmaite` on the PR**
