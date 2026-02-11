@@ -161,21 +161,32 @@ const PurchaseButton = observer(({ onPurchaseSuccess }: TPurchaseButtonProps = {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [basis, basis_options, contract_type]);
 
+    const prev_trade_type_tab_ref = React.useRef(trade_type_tab);
+
     React.useEffect(() => {
-        // Check each proposal info object directly for errors
-        if (proposal_info && contract_types.length === Object.keys(proposal_info).length) {
+        // When trade_type_tab changes, clear stale errors from the previous tab's proposals
+        // (e.g., switching Over→Under may leave a stale DIGITOVER error in proposal_info)
+        if (prev_trade_type_tab_ref.current !== trade_type_tab) {
+            prev_trade_type_tab_ref.current = trade_type_tab;
+            setErrorInfo({ has_error: false, message: null });
+            return;
+        }
+
+        // Only check errors for the currently displayed contract types (filtered by trade_type_tab)
+        // to avoid showing errors from non-displayed contract types
+        if (proposal_info && contract_types.length > 0) {
             let message = '';
-            // Using some() to break out of the loop once we find the first error
-            const has_error = Object.values(proposal_info).some(info => {
-                if (info.has_error && info.message) {
+            const has_error = contract_types.some(type => {
+                const info = proposal_info[type];
+                if (info?.has_error && info?.message) {
                     message = info.message || '';
-                    return true; // This breaks out of the loop
+                    return true;
                 }
                 return false;
             });
             setErrorInfo({ has_error, message: message || '' });
         }
-    }, [proposal_info]);
+    }, [proposal_info, contract_types, trade_type_tab]);
 
     React.useEffect(() => {
         if (error_info.has_error && error_info.message) {
