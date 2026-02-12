@@ -141,4 +141,60 @@ describe('TradeTypes', () => {
 
         expect(screen.queryByText('View all')).not.toBeInTheDocument();
     });
+
+    it('should only display trade types that are available in trade_types prop, filtering out unavailable types', () => {
+        // Simulate localStorage having unavailable trade types saved
+        const unavailableTradeTypes = [
+            {
+                id: 'pinned',
+                title: 'Pinned',
+                items: [
+                    { id: 'accumulator', title: 'Accumulator' },
+                    { id: 'vanilla_call', title: 'Vanilla Call' },
+                    { id: 'high_low', title: 'Higher/Lower' }, // Not in current trade_types
+                ],
+            },
+        ];
+        localStorage.setItem('pinned_trade_types', JSON.stringify(unavailableTradeTypes));
+
+        // Mock getTradeTypesList to return only limited available types (e.g., only Multiplier for Forex)
+        mockGetTradeTypesList.mockReturnValue([
+            { value: 'multiplier', text: 'Multiplier' },
+            { value: 'accumulator', text: 'Accumulator' },
+        ]);
+
+        const limited_mock_store = {
+            modules: {
+                trade: {
+                    contract_type: 'multiplier',
+                    contract_types_list,
+                },
+            },
+        };
+
+        render(
+            <TraderProviders store={mockStore(limited_mock_store)}>
+                <TradeTypes
+                    is_dark_mode_on={false}
+                    onTradeTypeSelect={jest.fn()}
+                    trade_types={[
+                        { value: 'multiplier', text: 'Multiplier' },
+                        { value: 'accumulator', text: 'Accumulator' },
+                    ]}
+                    contract_type='multiplier'
+                />
+            </TraderProviders>
+        );
+
+        // Should show available trade types
+        expect(screen.getByText('Multiplier')).toBeInTheDocument();
+        expect(screen.getByText('Accumulator')).toBeInTheDocument();
+
+        // Should NOT show unavailable trade types even if they were in localStorage
+        expect(screen.queryByText('Higher/Lower')).not.toBeInTheDocument();
+        expect(screen.queryByText('Vanilla Call')).not.toBeInTheDocument();
+
+        // Cleanup
+        localStorage.removeItem('pinned_trade_types');
+    });
 });
