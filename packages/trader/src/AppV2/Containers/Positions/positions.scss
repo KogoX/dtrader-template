@@ -57,7 +57,7 @@ $TABS_HEIGHT: var(--core-size-2400);
             & > div {
                 height: 100%;
 
-                .positions-page {
+                .positions-page-container {
                     &__open,
                     &__closed {
                         height: 100%;
