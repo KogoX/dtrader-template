@@ -5,17 +5,17 @@ import { observer } from 'mobx-react-lite';
 import { mapErrorMessage } from '@deriv/shared';
 import { ActionSheet, TextField, useSnackbar } from '@deriv-com/quill-ui';
 import { Localize } from '@deriv-com/translations';
+import { useDevice } from '@deriv-com/ui';
 
 import Carousel from 'AppV2/Components/Carousel';
 import CarouselHeader from 'AppV2/Components/Carousel/carousel-header';
 import { useTraderStore } from 'Stores/useTraderStores';
-import { useDevice } from '@deriv-com/ui';
 
 import { TTradeParametersProps } from '../trade-parameters';
 
 import BarrierDescription from './barrier-description';
-import BarrierInput from './barrier-input';
 import BarrierDesktop from './barrier-desktop';
+import BarrierInput from './barrier-input';
 
 const Barrier = observer(({ is_minimized }: TTradeParametersProps) => {
     const {
@@ -33,7 +33,7 @@ const Barrier = observer(({ is_minimized }: TTradeParametersProps) => {
     const isDays = duration_unit === 'd' || expiry_type === 'endtime';
 
     const has_error =
-        validation_errors.barrier_1.length > 0 ||
+        (validation_errors.barrier_1?.length ?? 0) > 0 ||
         (proposal_info?.[trade_type_tab]?.has_error && proposal_info?.[trade_type_tab]?.error_field === 'barrier');
 
     const { addSnackbar } = useSnackbar();

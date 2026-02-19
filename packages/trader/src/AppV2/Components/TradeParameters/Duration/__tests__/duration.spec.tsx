@@ -122,6 +122,12 @@ describe('Duration', () => {
         expect(screen.getByText('Hours')).toBeInTheDocument();
     });
 
+    it('should not crash when validation_errors does not contain duration key', () => {
+        default_trade_store.modules.trade.validation_errors = {};
+        expect(() => mockDuration()).not.toThrow();
+        expect(screen.getByLabelText('Duration')).toBeInTheDocument();
+    });
+
     it('should display a validation error message if there is a duration error', () => {
         default_trade_store.modules.trade.validation_errors.duration = [
             { message: 'Invalid duration', error_field: 'duration' },

@@ -704,6 +704,10 @@ export default class TradeStore extends BaseStore {
             () => {
                 // Clear existing validation errors to prevent stale messages
                 this.validation_errors = {};
+                // Reinitialize barrier keys so observer components don't crash
+                // accessing undefined before validation rules are reprocessed
+                this.validation_errors.barrier_1 = [];
+                this.validation_errors.barrier_2 = [];
 
                 // Regenerate all validation rules with new language
                 this.setValidationRules(getValidationRules());

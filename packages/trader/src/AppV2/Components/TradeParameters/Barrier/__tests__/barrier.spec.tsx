@@ -124,6 +124,12 @@ describe('Barrier Component', () => {
             expect(screen.getByRole('textbox')).toBeInTheDocument();
         });
 
+        it('should not crash when validation_errors does not contain barrier_1 key', () => {
+            default_mock_store.modules.trade.validation_errors = {};
+            expect(() => mockBarriers()).not.toThrow();
+            expect(screen.getByRole('textbox')).toBeInTheDocument();
+        });
+
         it('should not show error status when ActionSheet is open', async () => {
             default_mock_store.modules.trade.validation_errors = { barrier_1: ['Invalid barrier'] };
             mockBarriers();
