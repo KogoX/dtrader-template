@@ -16,6 +16,7 @@ import {
 import { getInitialLanguage, localize } from '@deriv-com/translations';
 
 import { requestRestLogout, WS } from 'Services';
+import { fetchAccounts, fetchOTP } from '../Services/accounts-api';
 import { clearTokens, generateOAuthURL, getStoredToken } from '../Services/oauth';
 
 import { getClientAccountType } from './Helpers/client';
@@ -326,13 +327,31 @@ export default class ClientStore extends BaseStore {
             // Set is_logging_in to true while we wait for authorization
             this.setIsLoggingIn(true);
 
-            // Wait for balance response which serves as authorization.
-            // socket-general.js processes the balance response and calls authorizeAccount().
+            // Step 5 of OAuth flow: fetch accounts → pick active account → get OTP WS URL.
+            // The OTP URL embeds auth — once the socket opens and subscribes to balance,
+            // socket-general.js calls authorizeAccount() which completes the login.
             try {
+                const accounts = await fetchAccounts();
+                const active_account =
+                    accounts.find(a => a.account_id === sessionStorage.getItem('active_loginid')) ||
+                    accounts.find(a => a.account_type === 'demo') ||
+                    accounts[0];
+
+                if (!active_account) throw new Error('No accounts found');
+
+                sessionStorage.setItem('active_loginid', active_account.account_id);
+                localStorage.setItem('active_loginid', active_account.account_id);
+
+                const ws_url = await fetchOTP(active_account.account_id);
+                BinarySocket.setWSUrl(ws_url);
+                BinarySocket.closeAndOpenNewConnection();
+
+                // Wait for balance response which serves as authorization.
+                // socket-general.js processes the balance response and calls authorizeAccount().
                 await BinarySocket.wait('balance');
             } catch (error) {
                 // eslint-disable-next-line no-console
-                console.error('[Auth] Balance timeout:', error);
+                console.error('[Auth] Account init failed:', error);
                 clearTokens();
             }
         }

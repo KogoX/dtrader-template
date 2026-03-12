@@ -60,7 +60,12 @@ const App = ({ root_store }) => {
         sessionStorage.removeItem('oauth_csrf_token');
 
         exchangeCodeForToken(code)
-            .then(() => cleanURL())
+            .then(() => {
+                // Token is now in sessionStorage. Reload to /  so initStore
+                // picks it up on fresh boot — avoids the race where onClientInit
+                // already ran before the token exchange completed.
+                window.location.replace('/');
+            })
             .catch(err => {
                 // eslint-disable-next-line no-console
                 console.error('[OAuth] Token exchange failed:', err);
