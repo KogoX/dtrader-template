@@ -1,229 +1,303 @@
-# Derivatives Trader
+# dtrader-template
 
-> A modern platform for derivatives trading with a modular, component-based architecture.
+> A white-label derivatives trading platform template. Fork it, configure your brand, and deploy — **no source code changes required**.
 
-![Prerequisite](https://img.shields.io/badge/node-20.x-blue.svg)
+![Node](https://img.shields.io/badge/node-20.x-blue.svg)
+![License](https://img.shields.io/badge/license-Apache%202.0-green.svg)
 
-## Table of Contents
+---
 
-- [Getting Started](#getting-started)
-    - [Prerequisites](#prerequisites)
-    - [Installation](#installation)
-- [Repository Structure](#repository-structure)
-    - [Packages](#packages)
-- [Development Workflow](#development-workflow)
-    - [Package Names and Structure](#package-names-and-structure)
-    - [Starting Development Servers](#starting-development-servers)
-    - [Common Development Tasks](#common-development-tasks)
-- [Building and Testing](#building-and-testing)
-- [Deployment](#deployment)
-    - [Test Deployments](#test-deployments)
-    - [Release Process](#release-process)
-- [Troubleshooting](#troubleshooting)
-- [Additional Documentation](#additional-documentation)
+## What Is This?
 
-## Getting Started
+`dtrader-template` is an open-source, production-ready trading platform you can fork and rebrand as your own. It connects to the [Deriv WebSocket API v3](https://developers.deriv.com) and supports:
 
-### Prerequisites
+- Real-time derivatives trading (options, multipliers, accumulators)
+- Candlestick/line charts via SmartCharts
+- Portfolio and trade history reports
+- OAuth2 authentication (PKCE flow)
+- PWA support (installable on mobile)
+- Responsive UI — desktop and mobile layouts
 
-Before working with this repository, ensure you have the following installed:
+All branding (name, colors, logos, URLs) is driven by a single config file: **`brand.config.json`**.
+
+---
+
+## Quick Start
+
+### 1. Prerequisites
 
 - **Node.js 20.x**
-- **git** (for contribution)
+- A **Deriv App ID** — register at [developers.deriv.com](https://developers.deriv.com)
+- A **Deriv OAuth Client ID** — contact Deriv to register your OAuth2 client
 
-### Installation
+### 2. Fork and clone
 
-1. **Fork the project**
+```sh
+git clone https://github.com/YOUR_ORG/dtrader-template.git
+cd dtrader-template
+npm run bootstrap
+```
 
-    Fork the project to your own GitHub account to work on your own version.
+### 3. Configure your brand
 
-2. **Clone the repository**
+Edit **`brand.config.json`** at the repo root:
 
-    ```sh
-    git clone git@github.com:deriv-com/derivatives-trader.git
-    cd derivatives-trader
-    ```
+```json
+{
+  "brand_name": "Your Company",
+  "brand_domain": "yourdomain.com",
+  "brand_hostname": {
+    "staging": "staging.trader.yourdomain.com",
+    "production": "trader.yourdomain.com"
+  },
+  "platform": {
+    "name": "Your Platform Name",
+    "description": "Your platform description.",
+    "home_url": "https://home.yourdomain.com/dashboard",
+    "help_centre_url": "https://yourdomain.com/help"
+  },
+  "app_id": {
+    "staging": YOUR_STAGING_APP_ID,
+    "production": YOUR_PRODUCTION_APP_ID
+  },
+  "colors": {
+    "primary": "#ff444f"
+  }
+}
+```
 
-3. **Install dependencies**
+### 4. Set your OAuth Client ID
 
-    ```sh
-    npm run bootstrap
-    ```
+Create a `.env` file in the repo root (already in `.gitignore`):
 
-4. **Build all packages**
+```sh
+OAUTH_CLIENT_ID=your_client_id_here
+```
 
-    ```sh
-    npm run build:all
-    ```
+For CI/CD, add it as a GitHub Actions repository secret named `OAUTH_CLIENT_ID`.
+
+### 5. Add your logos
+
+Drop your SVG files into `assets/brand/`:
+
+| File                  | Purpose                   |
+| --------------------- | ------------------------- |
+| `brand-logo.svg`      | Header logo — light theme |
+| `brand-logo-dark.svg` | Header logo — dark theme  |
+| `platform-logo.svg`   | Square platform icon      |
+
+### 6. Generate color tokens and validate
+
+```sh
+npm run generate:colors     # regenerates SCSS tokens from brand.config.json
+npm run verify:whitelabel   # validates config, logos, and required fields
+```
+
+### 7. Build and run
+
+```sh
+npm run build:all
+npm run serve core          # → https://localhost:8443
+```
+
+For the full white-label walkthrough, see [WHITE_LABEL.md](../WHITE_LABEL.md).
+
+---
 
 ## Repository Structure
 
-This project uses a monorepo structure managed with npm workspaces. All individual packages are located in the `packages/` directory.
+This is an npm workspaces monorepo with 9 packages under `packages/`:
 
-### Packages
-
-| Package      | Description                     | Documentation                                                                                                            |
-| ------------ | ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
-| `Api`        | API client for backend services | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](../packages/api/README.md)        |
-| `Api-v2`     | Next generation API client      | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](../packages/api-v2/README.md)     |
-| `Components` | Shared UI component library     | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](../packages/components/README.md) |
-| `Core`       | Core application framework      | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](../packages/core/README.md)       |
-| `Reports`    | Transaction and trading reports | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](../packages/reports/README.md)    |
-| `Shared`     | Shared utilities and helpers    | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](../packages/shared/README.md)     |
-| `Stores`     | State management stores         | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](../packages/stores/README.md)     |
-| `Trader`     | Trading platform interface      | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](../packages/trader/README.md)     |
-| `Utils`      | Utility functions               | [![Docs](https://img.shields.io/badge/API%20Docs-readme-orange.svg?style=flat-square)](../packages/utils/README.md)      |
-
-## Development Workflow
-
-### Package Names and Structure
-
-Each package follows a consistent naming convention with the `@deriv/` prefix. For example, the Components package is named `@deriv/components`.
-
-When using scripts from the root directory, you don't need to include the `@deriv/` prefix:
-
-```sh
-# This works:
-npm run serve components
-
-# Instead of:
-npm run serve @deriv/components
+```
+dtrader-template/
+├── brand.config.json        ← Only file you need to edit for rebranding
+├── assets/brand/            ← Drop your SVG logos here
+├── packages/
+│   ├── core/                ← App shell, routing, auth, global stores
+│   ├── trader/              ← Trading interface, charts, contract logic
+│   ├── reports/             ← Portfolio, trade history, statements
+│   ├── components/          ← Shared UI component library (77+ components)
+│   ├── api/                 ← React Query hooks over the WebSocket API
+│   ├── api-v2/              ← Next-gen REST API client
+│   ├── shared/              ← Utilities, validators, contract type helpers
+│   ├── stores/              ← MobX store provider & hooks
+│   └── utils/               ← General utility functions
+├── scripts/
+│   ├── generate-colors.js   ← Reads brand.config.json → writes SCSS tokens
+│   └── verify-white-label.js ← Validates your white-label configuration
+└── docs/                    ← Internal development guides
 ```
 
-### Starting Development Servers
+**Tech stack:** React 18 · MobX 6 · TypeScript 5 · Webpack 5 · Jest 29
 
-The Core package must be running to develop any other package:
+---
 
-**Option 1:** Working on Core only
+## White-Label Configuration Reference
+
+All branding is controlled by `brand.config.json`. The key fields:
+
+| Field                        | Required | Description                                             |
+| ---------------------------- | -------- | ------------------------------------------------------- |
+| `brand_name`                 | ✅       | Your company name — appears in page title and meta tags |
+| `brand_domain`               | ✅       | Your production domain (e.g. `yourdomain.com`)          |
+| `brand_hostname.staging`     | ✅       | Staging hostname — also used as OAuth redirect URI      |
+| `brand_hostname.production`  | ✅       | Production hostname                                     |
+| `platform.name`              | ✅       | Platform display name                                   |
+| `platform.description`       | ✅       | Used in `<meta name="description">`                     |
+| `platform.home_url`          | ✅       | URL the sidebar Home button navigates to                |
+| `platform.help_centre_url`   | ✅       | URL for your help/support page                          |
+| `app_id.staging`             | ✅       | Deriv API App ID for staging                            |
+| `app_id.production`          | ✅       | Deriv API App ID for production                         |
+| `colors.primary`             | ✅       | Main brand color (hex)                                  |
+| `features.dark_mode`         | —        | Show dark mode toggle. Default: `false`                 |
+| `features.language_switcher` | —        | Show language switcher. Default: `false`                |
+
+> **`OAUTH_CLIENT_ID` is not in `brand.config.json`** — set it as an environment variable or CI secret. See [WHITE_LABEL.md](../WHITE_LABEL.md#getting-a-deriv-oauth-client-id).
+
+For the full field reference and color pipeline docs, see [WHITE_LABEL.md](../WHITE_LABEL.md).
+
+---
+
+## Development Commands
 
 ```sh
+# Install dependencies
+npm run bootstrap
+
+# Start dev server (https://localhost:8443)
 npm run serve core
-```
 
-**Option 2:** Working on other packages
-
-```sh
-# Terminal 1 - Start the package you're working on
-npm run serve trader
-
-# Terminal 2 - Start the core
-npm run serve core
-```
-
-**Note:** The serve command runs the specified package's development server.
-
-### Common Development Tasks
-
-**Cleaning node_modules:**
-
-```sh
-npm run clean
-```
-
-**Clearing npm cache:**
-
-```sh
-npm cache clean -f
-```
-
-**Regenerating package-lock.json:**
-
-```sh
-npm run bootstrap:dev
-```
-
-## Building and Testing
-
-Available scripts from the root directory:
-
-| Command           | Description                                    |
-| ----------------- | ---------------------------------------------- |
-| `serve <pkg>`     | Builds and starts the dev server for a package |
-| `build:all`       | Builds all packages                            |
-| `test`            | Runs eslint, stylelint and jest tests          |
-| `test:jest`       | Runs only jest tests                           |
-| `test:eslint-all` | Runs eslint tests for all packages             |
-| `test:stylelint`  | Runs stylelint tests                           |
-
-Examples:
-
-```sh
-# Start development server for a package
-npm run serve trader
+# Start a specific package alongside core
+npm run serve trader        # Terminal 1
+npm run serve core          # Terminal 2
 
 # Build all packages
 npm run build:all
 
-# Run all tests
+# Run all tests (ESLint + Stylelint + Jest)
 npm run test
+
+# Run only Jest
+npm run test:jest
+
+# White-label tooling
+npm run generate:colors     # Regenerate SCSS tokens from brand.config.json
+npm run verify:whitelabel   # Validate white-label setup
+
+# Analyze bundle sizes
+npm run analyze:bundle
 ```
 
-## Deployment
+---
 
-#### Preview Deployment
+## CI/CD
 
-When creating a PR, Cloudflare automatically generates a preview link.
+The repository ships with GitHub Actions workflows ready to use:
 
-### Release Process
+| Workflow                 | Trigger                  | What it does                                 |
+| ------------------------ | ------------------------ | -------------------------------------------- |
+| `test.yml`               | Pull request to `master` | Build, lint, and run tests (3 parallel jobs) |
+| `release_staging.yml`    | Merge to `master`        | Auto-deploys to Cloudflare Pages (staging)   |
+| `release_production.yml` | Git tag `production_*`   | Deploys to Cloudflare Pages (production)     |
 
-There are two types of releases:
+**Required secrets** (GitHub → Settings → Secrets → Actions):
 
-1. **Staging Release**
+| Secret                  | Description                               |
+| ----------------------- | ----------------------------------------- |
+| `OAUTH_CLIENT_ID`       | Your Deriv OAuth2 client ID               |
+| `CLOUDFLARE_API_TOKEN`  | Cloudflare API token for Pages deployment |
+| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID                |
 
-    Staging releases happen automatically when a PR is merged to the master branch.
+**Optional variable** (Settings → Variables → Actions):
 
-2. **Production Release**
+| Variable               | Description                                                                          |
+| ---------------------- | ------------------------------------------------------------------------------------ |
+| `TRANSLATIONS_CDN_URL` | Base URL for translation JSON files (e.g. `https://cdn.yourdomain.com/translations`) |
 
-    ```sh
-    git tag production_v20230723 -m 'release production'
-    git push origin production_v20230723
-    ```
+To trigger a production release:
 
-## Troubleshooting
+```sh
+git tag production_v20240101 -m 'release production'
+git push origin production_v20240101
+```
 
-### Common Issues
+---
 
-1. **Installing packages**
+## Getting API Credentials
 
-    ```sh
-    # In package directory:
-    cd packages/trader
-    npm i package-name
+### Deriv App ID
 
-    # Or with npm workspaces:
-    npm i package-name --workspace=@deriv/trader
-    ```
+1. Go to [developers.deriv.com](https://developers.deriv.com) and log in
+2. Click **Register new application**
+3. Set the OAuth Redirect URL to your platform hostname
+4. Copy the App ID into `brand.config.json` → `app_id`
 
-2. **Uninstalling packages**
+### Deriv OAuth Client ID
 
-    ```sh
-    npm uninstall package-name --workspace=@deriv/translations
-    ```
+1. Contact Deriv to register your OAuth2 client application
+2. Provide your redirect URIs (must match `brand_hostname` in `brand.config.json`)
+3. Set the returned `client_id` as `OAUTH_CLIENT_ID` in your `.env` or CI secrets
 
-3. **Using package-lock.json**
+Never commit the client ID to git — the app will throw an explicit error at startup if it is missing.
 
-    ```sh
-    # Option 1:
-    npm ci --workspace=@deriv/trader
+---
 
-    # Option 2:
-    cd packages/trader && npm ci
-    ```
+## Verification Checklist
 
-4. **Sass compilation issues**
+After configuring, run the automated check:
 
-    ```sh
-    # Try these in order:
-    npm cache clean --force
-    npm run clean
-    npm run bootstrap
-    npm run build:all
-    ```
+```sh
+npm run verify:whitelabel
+```
+
+Then confirm in the browser at `https://localhost:8443`:
+
+- [ ] Page `<title>` shows your platform name and brand name
+- [ ] Header logo renders correctly in light and dark themes
+- [ ] Brand colors match your `colors.primary`
+- [ ] Login redirects to `https://auth.deriv.com/oauth2/auth?...` with `code_challenge` in the URL
+- [ ] WebSocket connects to `wss://api.derivws.com/trading/v1/...`
+- [ ] `https://localhost:8443/manifest.json` → `name` shows your `brand_name`
+
+---
+
+## What You Can Change Without Source Code Edits
+
+Everything in `brand.config.json` and `assets/brand/`:
+
+- Brand name, domain, hostnames
+- All colors (full SCSS token pipeline regenerated automatically)
+- Logos (SVG files)
+- Platform name and description
+- OAuth redirect URIs
+- Home and help centre URLs
+- App IDs
+- Feature flags (`dark_mode`, `language_switcher`)
+- Translation CDN URL
+
+## What Requires Source Code Changes
+
+| Limitation                                      | Reason                                                            |
+| ----------------------------------------------- | ----------------------------------------------------------------- |
+| `@deriv/quill-icons` icon set                   | Icons referenced by component name from this library              |
+| `@deriv-com/smartcharts-champion` chart library | Tightly coupled to the SmartChart module                          |
+| Deriv options trading API protocol              | WebSocket v3 protocol and contract types are Deriv-specific       |
+| Internal package names (`@deriv/*`)             | Monorepo workspace names — changing requires updating all imports |
+
+---
 
 ## Additional Documentation
 
-- [Stylesheet Guidelines](./Stylesheet/README.md) - CSS/SASS code style
-- [JavaScript Guidelines](./JavaScript/README.md) - JS/JSX code style
-- [Git Workflow](./git/README.md) - Git practices and processes
-- [Architecture Analysis](./architecture/architecture-analysis.md) - System architecture, module dependencies, and patterns
-- [SmartCharts Champion Adapter](./charts/smartcharts-champion-adapter-comprehensive-guide.md) - Chart adapter implementation guide
+| Document                                                                                     | Description                                                                                                        |
+| -------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| [WHITE_LABEL.md](../WHITE_LABEL.md)                                                          | Full white-label guide with all config fields, logo requirements, color pipeline, OAuth setup, and troubleshooting |
+| [Stylesheet Guidelines](./Stylesheet/README.md)                                              | CSS/SCSS code style guidelines                                                                                     |
+| [JavaScript Guidelines](./JavaScript/README.md)                                              | JavaScript/TypeScript code style guidelines                                                                        |
+| [Architecture Analysis](./architecture/architecture-analysis.md)                             | System architecture, module dependencies, and design patterns                                                      |
+| [SmartCharts Champion Adapter](./charts/smartcharts-champion-adapter-comprehensive-guide.md) | SmartCharts integration guide                                                                                      |
+
+---
+
+## License
+
+Apache 2.0 — see [LICENSE](../LICENSE) for details.

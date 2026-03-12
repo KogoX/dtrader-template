@@ -64,7 +64,7 @@ export const generateOAuthURL = async (): Promise<string> => {
         response_type: 'code',
         client_id: getOAuthClientId(),
         redirect_uri: getOAuthRedirectUri(),
-        scope: 'read trade account_manage',
+        scope: 'trade account_manage',
         state: csrf_token,
         code_challenge: challenge,
         code_challenge_method: 'S256',

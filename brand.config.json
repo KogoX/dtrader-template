@@ -4,8 +4,8 @@
     "brand_logo_dark": "brand/platform-logo.svg",
     "brand_domain": "deriv.com",
     "brand_hostname": {
-        "staging": "staging.dtrader-template.deriv.com",
-        "production": "dtrader-template.deriv.com"
+        "staging": "staging.dtrader-template.pages.dev",
+        "production": "dtrader-template.pages.dev"
     },
     "platform": {
         "name": "Derivatives Trader",
@@ -21,9 +21,9 @@
     "auth": {
         "staging": "https://staging-auth.deriv.com",
         "production": "https://auth.deriv.com",
-        "oauth_scopes": ["read", "trade", "account_manage"],
-        "oauth_redirect_uri_staging": "https://staging.dtrader-template.deriv.com",
-        "oauth_redirect_uri_production": "https://dtrader-template.deriv.com"
+        "oauth_scopes": ["trade", "account_manage"],
+        "oauth_redirect_uri_staging": "staging.dtrader-template.page.dev",
+        "oauth_redirect_uri_production": "dtrader-template.pages.dev"
     },
     "derivws": {
         "staging": "https://staging-api.derivws.com/trading/v1/",

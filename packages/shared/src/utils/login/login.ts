@@ -52,13 +52,29 @@ export const redirectToLogin = async (_language?: string): Promise<void> => {
         response_type: 'code',
         client_id: getOAuthClientId(),
         redirect_uri: getOAuthRedirectUri(),
-        scope: 'read trade account_manage',
+        scope: 'trade account_manage',
         state: csrf_token,
         code_challenge: challenge,
         code_challenge_method: 'S256',
     });
 
-    window.location.replace(`${getAuthBaseUrl()}/oauth2/auth?${params}`);
+    const auth_url = `${getAuthBaseUrl()}/oauth2/auth?${params}`;
+
+    // Remove this block once the invalid_client error is resolved.
+    // eslint-disable-next-line no-console
+    console.group('[redirectToLogin] OAuth2 redirect (step 4)');
+    // eslint-disable-next-line no-console
+    console.log('Full URL:', auth_url);
+    // eslint-disable-next-line no-console
+    console.log('client_id:', getOAuthClientId());
+    // eslint-disable-next-line no-console
+    console.log('redirect_uri:', getOAuthRedirectUri());
+    // eslint-disable-next-line no-console
+    console.log('auth_base_url:', getAuthBaseUrl());
+    // eslint-disable-next-line no-console
+    console.groupEnd();
+
+    window.location.replace(auth_url);
 };
 
 export const redirectToSignUp = (_language?: string): void => {
