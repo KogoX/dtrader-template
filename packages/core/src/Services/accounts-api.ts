@@ -66,15 +66,12 @@ export const createAccount = async (params: {
 export const fetchOTP = async (account_id: string): Promise<string> => {
     const res = await apiFetch(`${getApiV4BaseUrl()}/trading/v1/options/accounts/${account_id}/otp`, {
         method: 'POST',
-        body: JSON.stringify({}),
     });
     if (!res.ok) throw new Error(`fetchOTP failed: ${res.status}`);
-    // Response is double-encoded: { data: '{"data":{"url":"wss://..."}}' }
-    // Guard: if the API starts returning the inner object directly, handle both shapes.
-    const outer = await res.json();
-    const inner = typeof outer.data === 'string' ? JSON.parse(outer.data) : outer.data;
-    const url = inner?.data?.url;
-    if (!url) throw new Error('fetchOTP: no url in response');
+    // Response shape: { data: { url: "wss://..." } }
+    const json = await res.json();
+    const url = json?.data?.url;
+    if (!url) throw new Error(`fetchOTP: no url in response: ${JSON.stringify(json)}`);
     return url;
 };
 
