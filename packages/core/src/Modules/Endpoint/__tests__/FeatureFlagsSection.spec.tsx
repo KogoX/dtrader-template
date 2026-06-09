@@ -2,6 +2,7 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { StoreProvider, mockStore } from '@deriv/stores';
+import brand_config from 'root/brand.config.json';
 import { FeatureFlagsSection } from '../FeatureFlagsSection';
 
 const FLAGS = {
@@ -93,14 +94,14 @@ describe('<FeatureFlagsSection/>', () => {
     });
 
     it('should render dummy flag on staging', () => {
-        location.hostname = 'staging-dtrader.deriv.com';
+        location.hostname = brand_config.brand_hostname.staging;
         render(mockFeatureFlagsSection());
 
         expect(screen.getByRole('checkbox', { name: FLAGS.DUMMY_FLAG })).toBeInTheDocument();
     });
 
     it('should render none of the flags on production', () => {
-        location.hostname = 'dtrader.deriv.com';
+        location.hostname = brand_config.brand_hostname.production;
         render(mockFeatureFlagsSection());
 
         expect(screen.queryByRole('checkbox', { name: FLAGS.DUMMY_FLAG })).not.toBeInTheDocument();
