@@ -10,7 +10,7 @@
     "scripts": {
         "start": "rimraf lib && npm run test && npm run serve",
         "serve": "rimraf lib && cross-env BUILD_MODE='serve' webpack --mode=production --progress --watch",
-       "build": "../../node_modules/.bin/webpack --mode=production --progress",
+        "build": "webpack --mode=production --progress",
         "test:eslint": "eslint \"./src/**/*.?(js|jsx)\""
     },
     "author": "Deriv",
